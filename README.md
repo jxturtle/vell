@@ -1,2 +1,2 @@
 # vell
-Spelling project
+Part II code for basic functionality of code.
