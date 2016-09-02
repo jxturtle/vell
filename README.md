@@ -1,2 +1,2 @@
 # vell
-Part II code for basic functionality of code.
+Part II of vell - basic functionality of code.
