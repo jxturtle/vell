@@ -1,7 +1,10 @@
 package voxspell.voxspellApp;
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -10,19 +13,23 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
-public class TitleScreen extends JPanel {
-	private JPanel _butPanel, _picPanel, _viewPanel;
-	private JButton _level1, _level2, _level3, _level4, _level5;
+public class VOXSPELL extends JFrame implements ActionListener {
+	private JPanel _mainPanel, _butPanel, _picPanel, _viewPanel;
+	private JButton[] _levels;
 	private JLabel _picLabel, _label;
 	private ImageIcon _image;
 	protected static JFrame frame;
-	public TitleScreen() {
+	public VOXSPELL() {
 		buildGUI();
+		for(int i = 0; i < 5; i++) {
+			_levels[i].addActionListener(this);
+		}
 	}
 	
 	private void buildGUI() {
+		_mainPanel = new JPanel();
 		_picPanel = new JPanel();
-		_picPanel.setPreferredSize(new Dimension(600, 250));
+		_picPanel.setPreferredSize(new Dimension(600, 300));
 		_viewPanel = new JPanel();
 		_viewPanel.setPreferredSize(new Dimension(600, 150));
 		_butPanel = new JPanel();
@@ -33,28 +40,43 @@ public class TitleScreen extends JPanel {
 
 		_label = new JLabel("<html>Welcome to VOXSPELL<br>Please select the spelling level</html>", SwingConstants.CENTER);
 		_viewPanel.add(_label);
-
-		_level1 = new JButton("Level 1");
-		_level2 = new JButton("Level 2");
-		_level3 = new JButton("Level 3");
-		_level4 = new JButton("Level 4");
-		_level5 = new JButton("Level 5");
+		
 		_butPanel.setLayout(new GridLayout(1,5));
-		_butPanel.add(_level1);
-		_butPanel.add(_level2);
-		_butPanel.add(_level3);
-		_butPanel.add(_level4);
-		_butPanel.add(_level5);
-				
-		setLayout(new BorderLayout());
-		add(_picPanel, BorderLayout.NORTH);
-		add(_viewPanel, BorderLayout.CENTER);
-		add(_butPanel, BorderLayout.SOUTH);
+		_levels = new JButton[5];
+		for (int i = 0; i < 5; i++) {
+			_levels[i] = new JButton("Level " + Integer.toString(i+1));
+			_butPanel.add(_levels[i]);
+		}
+		_mainPanel.setLayout(new BorderLayout());
+		_mainPanel.add(_picPanel, BorderLayout.NORTH);
+		_mainPanel.add(_viewPanel, BorderLayout.CENTER);
+		_mainPanel.add(_butPanel, BorderLayout.SOUTH);
+		add(_mainPanel);
 	}
 
+	public void actionPerformed(ActionEvent e) {
+		String levelChosen = ((JButton)e.getSource()).getText();
+		switch (levelChosen) {
+		case ("Level 1"):
+			// creates new instance with textfile 1
+			_mainPanel.setVisible(false);
+		case ("Level 2"):
+			// creates new instance with textfile 2
+			_mainPanel.setVisible(false);
+		case ("Level 3"):
+			// creates new instance with textfile 3
+			_mainPanel.setVisible(false);
+		case ("Level 4"):
+			// creates new instance with textfile 4
+			_mainPanel.setVisible(false);
+		case ("Level 5"):
+			// creates new instance with textfile 5
+			_mainPanel.setVisible(false);
+		}
+		
+	}
 	public static void main(String[] args) {
-		frame = new JFrame();
-		frame.add(new TitleScreen());
+		frame = new VOXSPELL();
 		frame.setSize(600, 450);
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
