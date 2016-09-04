@@ -67,7 +67,7 @@ public class Game extends JPanel{
 
 		
 		_inputField = new JTextField(); //"Enter the word, then press Submit"
-		_inputField.setPreferredSize(new Dimension(180,30));
+		_inputField.setPreferredSize(new Dimension(220,30));
 		_submit = new JButton("Submit");
 		
 		_inputPanel = new JPanel();
