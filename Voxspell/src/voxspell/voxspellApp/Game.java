@@ -13,7 +13,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-import voxspell.StatsModel.StatsModel;
+import voxspell.StatsModel;
 
 public class Game extends JPanel{
 	private StatsModel _statsModel;
