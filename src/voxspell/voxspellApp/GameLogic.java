@@ -14,6 +14,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.SwingWorker;
 
 public class GameLogic {
 	private List<GameListener> _listeners;
@@ -25,6 +26,7 @@ public class GameLogic {
 	private int loopGame = 1;
 	private int cnt;
 	private int _level;
+	String _command;
 	private StatsModel _statsModel;
 	private StatsModelAdapter _statsModelAdapter;
 	private ArrayList<String> _words;
@@ -40,12 +42,12 @@ public class GameLogic {
 	}
 	
 	private void getUserInput(final String randomWord,final JTextField input, final JTextArea output) {
-		input.addActionListener(new ActionListener() {
+			input.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (cnt < 2) {
-					String command = "";
+					//String command = "";
 					String userInput = input.getText();
 					userIn = userInput;
 					input.setText("");
@@ -54,10 +56,11 @@ public class GameLogic {
 					if (randomWord.equalsIgnoreCase(userInput)) {
 						cnt += 3;
 						try {
-							command = "echo Correct. | festival --tts";
-							ProcessBuilder npb = new ProcessBuilder("bash", "-c", command);
-							Process process = npb.start();
-							process.waitFor();
+							_command = "echo Correct. | festival --tts";
+							worker.execute();
+//							ProcessBuilder npb = new ProcessBuilder("bash", "-c", command);
+//							Process process = npb.start();
+//							process.waitFor();
 							output.append("Correct. \n");
 							fin = true;
 //							addGameListener(_statsModelAdapter);
@@ -69,17 +72,18 @@ public class GameLogic {
 						cnt += 1;
 						try {
 							if (cnt == 1) {
-								command = "echo Incorrect. Please try again.... " + randomWord + "... " + randomWord + " | festival --tts";
+								_command = "echo Incorrect. Please try again.... " + randomWord + "... " + randomWord + " | festival --tts";
 								output.append("Incorrect. Please try again.\n");
 								output.append("Enter your selection: ");
 							} else {
 								fin = true;
-								command = "echo Incorrect. | festival --tts";
+								_command = "echo Incorrect. | festival --tts";
 								output.append("Incorrect.\n");
 							}
-							ProcessBuilder npb = new ProcessBuilder("bash", "-c", command);
-							Process process = npb.start();
-							process.waitFor();
+							worker.execute();
+//							ProcessBuilder npb = new ProcessBuilder("bash", "-c", command);
+//							Process process = npb.start();
+//							process.waitFor();
 						} catch (Exception e2) {
 							e2.printStackTrace();
 						}
@@ -99,16 +103,16 @@ public class GameLogic {
 		GameConfig config = GameConfig.instance(); 
 		_words = config.getLevelWords(_level); 
 		String randomWord = getRandomWord(_words);
-
+		System.out.println(randomWord);
 		_outputArea.append("Enter your selection: ");
 		getUserInput(randomWord, _inputField, _outputArea);
 		try {			
 
-			String command = "echo Please spell.... " + randomWord + " | festival --tts";
-			ProcessBuilder pb = new ProcessBuilder("bash", "-c", command);
-			Process process = pb.start();
-			process.waitFor();		
-			process.destroy();
+			_command = "echo Please spell.... " + randomWord + " | festival --tts";
+			worker.execute();
+//			ProcessBuilder pb = new ProcessBuilder("bash", "-c", command);
+//			Process process = pb.start();
+//			process.waitFor();		
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -120,6 +124,7 @@ public class GameLogic {
 	public String getRandomWord(ArrayList<String> words) {
 		Collections.shuffle(words);
 		String pickWord = words.get(0);
+		words.remove(pickWord);
 		return pickWord;
 	}
 /*
@@ -135,4 +140,17 @@ public class GameLogic {
 	public void wordIsCorrect(GameListener listener) {
 		listener.updateProgressBar();
 	}
+
+	private SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+
+		@Override
+		protected Void doInBackground() throws Exception {
+			ProcessBuilder pb = new ProcessBuilder("bash", "-c", _command);
+			Process process = pb.start();
+			process.waitFor();
+			return null;
+		}
+		
+	};
+
 }
