@@ -89,11 +89,21 @@ public class GameGUI extends JPanel {
 		
 		_leftTopPanel.setLayout(new BorderLayout());
 		_leftTopPanel.setBorder(BorderFactory.createTitledBorder("Game Area"));
-		
 		_listenAgain = new JButton("Listen to the word again");
 		_listenAgain.setPreferredSize(new Dimension(200,30));
 		
 		_outputArea = new JTextArea();
+		
+		_outputArea.append("\n");
+		_outputArea.append("Starting a new Spelling Quiz Game...\n");
+		_outputArea.append("Please spell out the ten words.\n");
+		_outputArea.append("===========================================\n");
+
+		GameLogic game = new GameLogic(_level, 10, _outputArea, _inputField);	
+		int cnt = 0;
+		game.playGame();
+		
+		
 		_outputArea.setEditable(false);
 		_outputArea.setPreferredSize(new Dimension(300,410));
 
