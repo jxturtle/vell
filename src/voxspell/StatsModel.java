@@ -10,7 +10,6 @@ import javax.swing.JPanel;
 
 public class StatsModel extends JPanel {
 
-	private JLabel _correct;
 	private static final int BAR_HEIGHT = 20;
 	private int _level;
 	private int _wordsCorrect;
