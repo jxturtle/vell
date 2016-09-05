@@ -3,7 +3,6 @@ package voxspell.voxspellApp;
 import java.util.ArrayList;
 
 import java.util.Collections;
-import java.util.List;
 
 import voxspell.GameListener;
 import voxspell.StatsModel;
@@ -14,10 +13,9 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.SwingWorker;
 
 public class GameLogic {
-	private List<GameListener> _listeners;
+	private static ArrayList<GameListener> _listeners;
 	private int _wordCap;
 	private JTextArea _outputArea;
 	private JTextField _inputField;
@@ -31,23 +29,25 @@ public class GameLogic {
 	private StatsModelAdapter _statsModelAdapter;
 	private ArrayList<String> _words;
 	private GameConfig _config;
+	private int _numWordCorrect;
 
-	public GameLogic(int level, int wordCap, JTextArea outputArea, JTextField inputField) {
+	public GameLogic(int level, int wordCap, JTextArea outputArea, JTextField inputField, ArrayList<GameListener> listeners) {
 		_level = level;
+		_listeners = listeners;
 		_wordCap = wordCap;
 		_outputArea = outputArea;
 		_inputField = inputField;
 		_statsModel = new StatsModel(level);
-		_statsModelAdapter = new StatsModelAdapter(_statsModel);
+		_statsModelAdapter = new StatsModelAdapter(_statsModel, _numWordCorrect);
 	}
 	
 	private void getUserInput(final String randomWord,final JTextField input, final JTextArea output) {
-			input.addActionListener(new ActionListener() {
+		input.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (cnt < 2) {
-					//String command = "";
+					String command = "";
 					String userInput = input.getText();
 					userIn = userInput;
 					input.setText("");
@@ -55,16 +55,14 @@ public class GameLogic {
 
 					if (randomWord.equalsIgnoreCase(userInput)) {
 						cnt += 3;
+						wordIsCorrect();
 						try {
-							_command = "echo Correct. | festival --tts";
-							worker.execute();
-//							ProcessBuilder npb = new ProcessBuilder("bash", "-c", command);
-//							Process process = npb.start();
-//							process.waitFor();
+							command = "echo Correct. | festival --tts";
+							ProcessBuilder npb = new ProcessBuilder("bash", "-c", command);
+							Process process = npb.start();
+							process.waitFor();
 							output.append("Correct. \n");
 							fin = true;
-//							addGameListener(_statsModelAdapter);
-							wordIsCorrect(_statsModelAdapter);
 						} catch (Exception e1) {
 							e1.printStackTrace();
 						}
@@ -72,18 +70,17 @@ public class GameLogic {
 						cnt += 1;
 						try {
 							if (cnt == 1) {
-								_command = "echo Incorrect. Please try again.... " + randomWord + "... " + randomWord + " | festival --tts";
+								command = "echo Incorrect. Please try again.... " + randomWord + "... " + randomWord + " | festival --tts";
 								output.append("Incorrect. Please try again.\n");
 								output.append("Enter your selection: ");
 							} else {
 								fin = true;
-								_command = "echo Incorrect. | festival --tts";
+								command = "echo Incorrect. | festival --tts";
 								output.append("Incorrect.\n");
 							}
-							worker.execute();
-//							ProcessBuilder npb = new ProcessBuilder("bash", "-c", command);
-//							Process process = npb.start();
-//							process.waitFor();
+							ProcessBuilder npb = new ProcessBuilder("bash", "-c", command);
+							Process process = npb.start();
+							process.waitFor();
 						} catch (Exception e2) {
 							e2.printStackTrace();
 						}
@@ -92,7 +89,7 @@ public class GameLogic {
 					//3 is for correct
 					//4 is for faulted
 					if (fin && _wordCap > 1) {
-						GameLogic experimentalNewGame = new GameLogic(_level, _wordCap-1, _outputArea, _inputField);
+						GameLogic experimentalNewGame = new GameLogic(_level, _wordCap-1, _outputArea, _inputField, _listeners);
 						experimentalNewGame.playGame();
 					}
 				}
@@ -108,17 +105,14 @@ public class GameLogic {
 		getUserInput(randomWord, _inputField, _outputArea);
 		try {			
 
-			_command = "echo Please spell.... " + randomWord + " | festival --tts";
-			worker.execute();
-//			ProcessBuilder pb = new ProcessBuilder("bash", "-c", command);
-//			Process process = pb.start();
-//			process.waitFor();		
-
+			String command = "echo Please spell.... " + randomWord + " | festival --tts";
+			ProcessBuilder pb = new ProcessBuilder("bash", "-c", command);
+			Process process = pb.start();
+			process.waitFor();		
+			process.destroy();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
-
 	}
 	
 	public String getRandomWord(ArrayList<String> words) {
@@ -127,30 +121,10 @@ public class GameLogic {
 		words.remove(pickWord);
 		return pickWord;
 	}
-/*
-	public void addGameListener(GameListener listener) {
-		_listeners.add(listener);
-	}
+
 	public void wordIsCorrect() {
 		for (GameListener listener : _listeners) {
 			listener.updateProgressBar();
 		}
 	}
-	*/
-	public void wordIsCorrect(GameListener listener) {
-		listener.updateProgressBar();
-	}
-
-	private SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
-
-		@Override
-		protected Void doInBackground() throws Exception {
-			ProcessBuilder pb = new ProcessBuilder("bash", "-c", _command);
-			Process process = pb.start();
-			process.waitFor();
-			return null;
-		}
-		
-	};
-
 }
