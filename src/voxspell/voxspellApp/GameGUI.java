@@ -1,6 +1,9 @@
 package voxspell.voxspellApp;
 
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -11,17 +14,21 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.text.DefaultCaret;
 
+import voxspell.GameListener;
 import voxspell.StatsModel;
 import voxspell.StatsModelAdapter;
 
 public class GameGUI extends JPanel {
 	private GameComboBoxModel _comboBoxModel;
 	private JComboBox _voiceOptions;
-	private JButton _submit, _listenAgain, _changeVoice;
-	private JPanel _leftPanel, _leftTopPanel, _rightPanel, _optionPanel, _inputPanel, _mainPanel;
+	private JButton _start, _submit, _listenAgain, _changeVoice;
+	private JPanel _gamePanel, _beginPanel, _leftPanel, _leftTopPanel, _rightPanel, _optionPanel, _inputPanel, _mainPanel;
 	private JTextArea _outputArea;
 	private JTextField _inputField;
 	private String _voiceSelected;
@@ -29,19 +36,29 @@ public class GameGUI extends JPanel {
 	private StatsModel[] _statsModels;
 	private JPanel[] _levelPanels, _levelLabelPanels;
 	private JLabel[] _levelLabels;
-	private int _wordsCorrect = 4;
+	private int _wordsCorrect;
 	private StatsModelAdapter[] _statsModelAdapters;
+	private GameLogic _game;
 	
 	public GameGUI(int level) {
 		_level = level;
 		GameConfig config = GameConfig.instance();
+
 		
 		_comboBoxModel = new GameComboBoxModel();
 		buildGUI();
 
-		// need to be in class where game logic is implemented 
-//		_listeners = new ArrayList<GameListener>();
+		
+		_start.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ArrayList<GameListener> _listeners = new ArrayList<GameListener>();
+				_game = new GameLogic(_level, 10, _outputArea, _inputField, _listeners);	
+				_game.playGame();
+				_listeners.add(_statsModelAdapters[_level-1]);
+				_statsModels[_level-1].compute(_wordsCorrect);
 
+			}
+		});
 		System.out.println("Building...");
 		
 		
@@ -49,17 +66,21 @@ public class GameGUI extends JPanel {
 
 	private void buildGUI() {
 		//Setting up the panels
+		_gamePanel = new JPanel();
+		_gamePanel.setLayout(new BorderLayout());
+		_beginPanel = new JPanel();
+		_beginPanel.setPreferredSize(new Dimension(50, 60));
 		_mainPanel = new JPanel();
 		//Main frames for the GUI.
 		_leftTopPanel = new JPanel();
 		_leftPanel = new JPanel();
-		_leftPanel.setPreferredSize(new Dimension(330, 555));
+		_leftPanel.setPreferredSize(new Dimension(330, 540));
 		_rightPanel = new JPanel();
 		//Main game area
 		_leftTopPanel.setPreferredSize(new Dimension(330, 300));
 		
 		//Stats screen
-		_rightPanel.setPreferredSize(new Dimension(440, 555));
+		_rightPanel.setPreferredSize(new Dimension(440, 540));
 
 		//Create main stats panel
 		_rightPanel.setLayout(new GridLayout(11,1));
@@ -81,23 +102,30 @@ public class GameGUI extends JPanel {
 			_levelLabelPanels[i].add(_levelLabels[i]);
 			_levelPanels[i].add(_levelLabelPanels[i], BorderLayout.WEST);
 			_statsModels[i] = new StatsModel(i+1);
-			_statsModels[i].compute(_wordsCorrect);
-			_statsModelAdapters[i] = new StatsModelAdapter(_statsModels[i]);
+			_statsModelAdapters[i] = new StatsModelAdapter(_statsModels[i], 0);
+//			_statsModels[i].compute(_wordsCorrect);
 			_levelPanels[i].add(_statsModels[i], BorderLayout.CENTER);
 			_rightPanel.add(_levelPanels[i]);
 		}
 		
 		_leftTopPanel.setLayout(new BorderLayout());
 		_leftTopPanel.setBorder(BorderFactory.createTitledBorder("Game Area"));
-		
 		_listenAgain = new JButton("Listen to the word again");
 		_listenAgain.setPreferredSize(new Dimension(200,30));
 		
-		_outputArea = new JTextArea();
-		_outputArea.setEditable(false);
-		_outputArea.setPreferredSize(new Dimension(300,410));
-
+		_outputArea = new JTextArea(0,20);
+		DefaultCaret caret = (DefaultCaret)_outputArea.getCaret();
+		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 		
+		_outputArea.append("\n");
+		_outputArea.append("Starting a new Spelling Quiz Game...\n");
+		_outputArea.append("Please spell out the ten words.\n");
+		_outputArea.append("===========================================\n");
+				
+		_outputArea.setEditable(false);
+//		_outputArea.setPreferredSize(new Dimension(300,410));
+
+		JScrollPane scroll = new JScrollPane(_outputArea);
 		_inputField = new JTextField(); //"Enter the word, then press Submit"
 		_inputField.setPreferredSize(new Dimension(220,30));
 		_submit = new JButton("Submit");
@@ -126,8 +154,12 @@ public class GameGUI extends JPanel {
 		_mainPanel.add(_leftPanel);
 		_mainPanel.add(_rightPanel);
 		
-		add(_mainPanel);
+		_start = new JButton("Begin playing");
+		_beginPanel.add(_start);
+		_gamePanel.add(_mainPanel, BorderLayout.NORTH);
+		_gamePanel.add(_beginPanel, BorderLayout.CENTER);
 		
+		add(_gamePanel);
 	}
 
 	private class GameComboBoxModel extends DefaultComboBoxModel {
