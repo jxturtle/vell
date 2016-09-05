@@ -3,6 +3,9 @@ package voxspell.voxspellApp;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
+import java.awt.Adjustable;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -13,8 +16,11 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.text.DefaultCaret;
 
 import voxspell.StatsModel;
 import voxspell.StatsModelAdapter;
@@ -107,17 +113,19 @@ public class GameGUI extends JPanel {
 		_listenAgain = new JButton("Listen to the word again");
 		_listenAgain.setPreferredSize(new Dimension(200,30));
 		
-		_outputArea = new JTextArea();
+		_outputArea = new JTextArea(0,20);
+		DefaultCaret caret = (DefaultCaret)_outputArea.getCaret();
+		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+		
 		
 		_outputArea.append("\n");
 		_outputArea.append("Starting a new Spelling Quiz Game...\n");
 		_outputArea.append("Please spell out the ten words.\n");
-		_outputArea.append("===========================================\n");
+		_outputArea.append("===============================\n");
 				
 		_outputArea.setEditable(false);
-		_outputArea.setPreferredSize(new Dimension(300,410));
-
-		
+		//_outputArea.setPreferredSize(new Dimension(300,390));
+		JScrollPane scroll = new JScrollPane(_outputArea);
 		_inputField = new JTextField(); //"Enter the word, then press Submit"
 		_inputField.setPreferredSize(new Dimension(220,30));
 		_submit = new JButton("Submit");
@@ -128,7 +136,7 @@ public class GameGUI extends JPanel {
 		
 		
 		_leftTopPanel.add(_listenAgain, BorderLayout.NORTH);
-		_leftTopPanel.add(_outputArea, BorderLayout.CENTER);
+		_leftTopPanel.add(scroll, BorderLayout.CENTER);
 		_leftTopPanel.add(_inputPanel, BorderLayout.SOUTH);
 		
 		_optionPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
