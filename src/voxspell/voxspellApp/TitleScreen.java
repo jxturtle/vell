@@ -3,7 +3,6 @@ package voxspell.voxspellApp;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -21,7 +20,7 @@ public class TitleScreen extends JFrame implements ActionListener {
 	private JButton[] _basicLevels, _advancedLevels;
 	private JLabel _picLabel, _label, _welcomeLabel;
 	private ImageIcon _welcome;
-	private Font font = new Font("Vernada", Font.PLAIN, 20);
+	private Font font = new Font("Verdana", Font.PLAIN, 20);
 	protected static JFrame frame;
 	public TitleScreen() {
 		buildGUI();
@@ -82,7 +81,7 @@ public class TitleScreen extends JFrame implements ActionListener {
 		_gameOptionPanel.setLayout(new BorderLayout());
 		_gameOptionPanel.add(_basicPanel, BorderLayout.NORTH);
 		_gameOptionPanel.add(_advancedPanel,BorderLayout.CENTER);
-		_gameOptionPanel.setPreferredSize(new Dimension(600, 130));
+		_gameOptionPanel.setPreferredSize(new Dimension(600, 119));
 		
 		_mainPanel.add(_titleScreenPanel, BorderLayout.NORTH);
 		_mainPanel.add(_gameOptionPanel, BorderLayout.SOUTH);
