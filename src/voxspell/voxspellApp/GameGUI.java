@@ -36,35 +36,43 @@ public class GameGUI extends JPanel {
 	private StatsModel[] _statsModels;
 	private JPanel[] _levelPanels, _levelLabelPanels;
 	private JLabel[] _levelLabels;
-	private int _wordsCorrect;
+//	private int _wordsCorrect;
 	private StatsModelAdapter[] _statsModelAdapters;
 	private GameLogic _game;
 	
 	public GameGUI(int level) {
 		_level = level;
 		GameConfig config = GameConfig.instance();
-
 		
-		_comboBoxModel = new GameComboBoxModel();
 		buildGUI();
-
 		
 		_start.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				ArrayList<GameListener> _listeners = new ArrayList<GameListener>();
-				_game = new GameLogic(_level, 10, _outputArea, _inputField, _listeners);	
-				_game.playGame();
-				_listeners.add(_statsModelAdapters[_level-1]);
-				_statsModels[_level-1].compute(_wordsCorrect);
-
+				_outputArea.append("\n");
+				_outputArea.append("Starting a new Spelling Quiz Game...\n");
+				_outputArea.append("Please spell out the ten words.\n");
+				_outputArea.append("===========================================\n");
+				_start.setVisible(false);
+				setUpNewLevelGame();
+//				ArrayList<GameListener> _listeners = new ArrayList<GameListener>();
+//				_game = new GameLogic(_level, 10, _outputArea, _inputField, _listeners);	
+//				_game.playGame();
+//				_listeners.add(_statsModelAdapters[_level-1]);
+//				_statsModels[_level-1].compute(_wordsCorrect);
 			}
 		});
-		System.out.println("Building...");
-		
 		
 	}
+	public void setUpNewLevelGame() {		
+		ArrayList<GameListener> _listeners = new ArrayList<GameListener>();
+		_listeners.add(_statsModelAdapters[_level-1]);
+		_statsModels[_level-1].compute(0);		
 
+		_game = new GameLogic(_level, 10, _outputArea, _inputField, _start, _listeners);	
+		_game.playGame();
+	}
 	private void buildGUI() {
+		_comboBoxModel = new GameComboBoxModel();
 		//Setting up the panels
 		_gamePanel = new JPanel();
 		_gamePanel.setLayout(new BorderLayout());
@@ -74,13 +82,13 @@ public class GameGUI extends JPanel {
 		//Main frames for the GUI.
 		_leftTopPanel = new JPanel();
 		_leftPanel = new JPanel();
-		_leftPanel.setPreferredSize(new Dimension(330, 540));
+		_leftPanel.setPreferredSize(new Dimension(330, 520));
 		_rightPanel = new JPanel();
 		//Main game area
 		_leftTopPanel.setPreferredSize(new Dimension(330, 300));
 		
 		//Stats screen
-		_rightPanel.setPreferredSize(new Dimension(440, 540));
+		_rightPanel.setPreferredSize(new Dimension(440, 520));
 
 		//Create main stats panel
 		_rightPanel.setLayout(new GridLayout(11,1));
@@ -118,8 +126,9 @@ public class GameGUI extends JPanel {
 		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 		
 		_outputArea.append("\n");
-		_outputArea.append("Starting a new Spelling Quiz Game...\n");
-		_outputArea.append("Please spell out the ten words.\n");
+		_outputArea.append("Please press the \"Begin playing\" button\n");
+//		_outputArea.append("Starting a new Spelling Quiz Game...\n");
+//		_outputArea.append("Please spell out the ten words.\n");
 		_outputArea.append("===========================================\n");
 				
 		_outputArea.setEditable(false);
@@ -136,7 +145,7 @@ public class GameGUI extends JPanel {
 		
 		
 		_leftTopPanel.add(_listenAgain, BorderLayout.NORTH);
-		_leftTopPanel.add(_outputArea, BorderLayout.CENTER);
+		_leftTopPanel.add(scroll, BorderLayout.CENTER);
 		_leftTopPanel.add(_inputPanel, BorderLayout.SOUTH);
 		
 		_optionPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));

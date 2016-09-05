@@ -11,14 +11,17 @@ import voxspell.StatsModelAdapter;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 public class GameLogic {
-	private static ArrayList<GameListener> _listeners;
+	private ArrayList<GameListener> _listeners;
 	private int _wordCap;
 	private JTextArea _outputArea;
 	private JTextField _inputField;
+	private JButton _start;
 	private String userIn;
 	private boolean fin;
 	private int loopGame = 1;
@@ -31,12 +34,13 @@ public class GameLogic {
 	private GameConfig _config;
 	private int _numWordCorrect;
 
-	public GameLogic(int level, int wordCap, JTextArea outputArea, JTextField inputField, ArrayList<GameListener> listeners) {
+	public GameLogic(int level, int wordCap, JTextArea outputArea, JTextField inputField, JButton start, ArrayList<GameListener> listeners) {
 		_level = level;
 		_listeners = listeners;
 		_wordCap = wordCap;
 		_outputArea = outputArea;
 		_inputField = inputField;
+		_start = start;
 		_statsModel = new StatsModel(level);
 		_statsModelAdapter = new StatsModelAdapter(_statsModel, _numWordCorrect);
 	}
@@ -88,9 +92,25 @@ public class GameLogic {
 					//2 is for straight up incorrect
 					//3 is for correct
 					//4 is for faulted
+//					System.out.println(_wordCap);
 					if (fin && _wordCap > 1) {
-						GameLogic experimentalNewGame = new GameLogic(_level, _wordCap-1, _outputArea, _inputField, _listeners);
+						GameLogic experimentalNewGame = new GameLogic(_level, _wordCap-1, _outputArea, _inputField, _start, _listeners);
 						experimentalNewGame.playGame();
+					} else if (_wordCap == 1) {
+						int test = JOptionPane.showConfirmDialog(null, "Would you like to move on to the next level?", "Level finished", JOptionPane.YES_NO_OPTION);
+						switch(test) {
+						case JOptionPane.YES_OPTION:
+							_level++;
+							_wordCap = 10;
+							_start.setVisible(true);
+							break;
+						case JOptionPane.NO_OPTION:
+							_wordCap = 10;
+							_start.setVisible(true);
+							break;
+						default:
+							break;
+						}
 					}
 				}
 			}

@@ -63,7 +63,7 @@ public class GameConfig {
 	
 	public ArrayList<String> getLevelWords(int level) { 
 		_words = _finalWordMap.get(level);
-		System.out.println(_words);
+//		System.out.println(_words);
 		return _words;
 	}
 //	
