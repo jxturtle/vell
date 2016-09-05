@@ -16,7 +16,8 @@ public class GameConfig {
 	private static final String FILENAME = "NZCER-spelling-lists.txt";
 	private ArrayList<String> _words;
 	private ArrayList<String> _wordArray;
-	private HashMap<Integer, ArrayList<String>> _wordMap;
+	//private HashMap<Integer, ArrayList<String>> _wordMap;
+	private HashMap<Integer, ArrayList<String>> _finalWordMap;
 	private int _key;
 	
 	private static GameConfig instance;
@@ -54,7 +55,7 @@ public class GameConfig {
 			}
 				//System.out.println(_key + " " + _wordArray);
 				_wordMap.put(_key, _wordArray);
-				System.out.println(_wordMap);
+				_finalWordMap = _wordMap;
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -65,13 +66,14 @@ public class GameConfig {
 	
 	
 	public ArrayList<String> getLevelWords(int level) { 
-		_words = _wordMap.get(level);
+		_words = _finalWordMap.get(level);
+		System.out.println(_words);;
 		return _words;
 	}
 	
 	public static void main(String[] args) {
 		GameConfig config = GameConfig.instance();
-		config.getLevelWords(2);
+		config.getLevelWords(3);
 		
 	}
 }
