@@ -67,13 +67,12 @@ public class GameConfig {
 	
 	public ArrayList<String> getLevelWords(int level) { 
 		_words = _finalWordMap.get(level);
-		System.out.println(_words);;
 		return _words;
 	}
-	
-	public static void main(String[] args) {
-		GameConfig config = GameConfig.instance();
-		config.getLevelWords(3);
-		
-	}
+//	
+//	public static void main(String[] args) {
+//		GameConfig config = GameConfig.instance();
+//		config.getLevelWords(3);
+//		
+//	}
 }
