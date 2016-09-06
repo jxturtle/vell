@@ -12,6 +12,7 @@ import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
@@ -39,37 +40,45 @@ public class GameGUI extends JPanel {
 //	private int _wordsCorrect;
 	private StatsModelAdapter[] _statsModelAdapters;
 	private GameLogic _game;
+	private ArrayList<String> _words;
+	private GameConfig _config;
+//	private JPanel _titleScreenPanel;
+	private static JFrame _frame = TitleScreen.frame;
 	
 	public GameGUI(int level) {
 		_level = level;
-		GameConfig config = GameConfig.instance();
+		_config = new GameConfig();
 		
 		buildGUI();
 		
 		_start.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				_outputArea.append("\n");
-				_outputArea.append("Starting a new Spelling Quiz Game...\n");
-				_outputArea.append("Please spell out the ten words.\n");
-				_outputArea.append("===========================================\n");
 				_start.setVisible(false);
 				setUpNewLevelGame();
-//				ArrayList<GameListener> _listeners = new ArrayList<GameListener>();
-//				_game = new GameLogic(_level, 10, _outputArea, _inputField, _listeners);	
-//				_game.playGame();
-//				_listeners.add(_statsModelAdapters[_level-1]);
-//				_statsModels[_level-1].compute(_wordsCorrect);
 			}
 		});
-		
 	}
-	public void setUpNewLevelGame() {		
+	public void setUpNewLevelGame() {	
+		_statsModels[_level-1].setCorrect(0);
+		_outputArea.append("\n");
+		_outputArea.append("Starting a new Spelling Quiz Game...\n");
+		_outputArea.append("Please spell out the ten words.\n");
+		_outputArea.append("==============================\n");
+		if (_start.getText().equals("Begin the next level")) {
+			_level++;
+//			_words = _config.getLevelWords(_level);
+		} else if (_start.getText().equals("Repeat the same level")){
+			_statsModelAdapters[_level-1].setLength(0);
+			_config = new GameConfig();
+		} else if (_start.getText().equals("Finish the quiz")){
+			_frame.dispose();
+		}
+		_words = _config.getLevelWords(_level);
 		ArrayList<GameListener> _listeners = new ArrayList<GameListener>();
 		_listeners.add(_statsModelAdapters[_level-1]);
 		_statsModels[_level-1].compute(0);		
-
-		_game = new GameLogic(_level, 10, _outputArea, _inputField, _start, _listeners);	
-		_game.playGame();
+		_game = new GameLogic(_level, 10, _outputArea, _inputField, _start, _listeners);
+		_game.playGame(_words);
 	}
 	private void buildGUI() {
 		_comboBoxModel = new GameComboBoxModel();
@@ -129,7 +138,7 @@ public class GameGUI extends JPanel {
 		_outputArea.append("Please press the \"Begin playing\" button\n");
 //		_outputArea.append("Starting a new Spelling Quiz Game...\n");
 //		_outputArea.append("Please spell out the ten words.\n");
-		_outputArea.append("===========================================\n");
+		_outputArea.append("==============================\n");
 				
 		_outputArea.setEditable(false);
 //		_outputArea.setPreferredSize(new Dimension(300,410));

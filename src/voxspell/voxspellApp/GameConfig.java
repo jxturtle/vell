@@ -12,19 +12,20 @@ public class GameConfig {
 	private static final String FILENAME = "NZCER-spelling-lists.txt";
 	private ArrayList<String> _words;
 	private ArrayList<String> _wordArray;
+	private ArrayList<String> _wordsCopy;
 	//private HashMap<Integer, ArrayList<String>> _wordMap;
 	private HashMap<Integer, ArrayList<String>> _finalWordMap;
 	private int _key;
 	
-	private static GameConfig instance;
-	public static GameConfig instance() {
-		if (instance == null) {
-			instance = new GameConfig();
-		}
-		return instance;
-	}
+//	private static GameConfig instance;
+//	public static GameConfig instance() {
+//		if (instance == null) {
+//			instance = new GameConfig();
+//		}
+//		return instance;
+//	}
 	
-	private GameConfig() {
+	public GameConfig() {
 		try {
 			HashMap<Integer, ArrayList<String>> _wordMap = new HashMap<Integer, ArrayList<String>>();
 			ArrayList<String> _wordArray = new ArrayList<String>();
@@ -61,9 +62,11 @@ public class GameConfig {
 	
 	
 	
+	@SuppressWarnings("unchecked")
 	public ArrayList<String> getLevelWords(int level) { 
+		
 		_words = _finalWordMap.get(level);
-//		System.out.println(_words);
+//		_wordsCopy = (ArrayList<String>) _words.clone();
 		return _words;
 	}
 //	

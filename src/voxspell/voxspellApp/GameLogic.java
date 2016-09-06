@@ -15,6 +15,7 @@ import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.SwingWorker;
 
 public class GameLogic {
 	private ArrayList<GameListener> _listeners;
@@ -32,7 +33,7 @@ public class GameLogic {
 	private StatsModelAdapter _statsModelAdapter;
 	private ArrayList<String> _words;
 	private GameConfig _config;
-	private int _numWordCorrect;
+//	private int _numWordCorrect;
 
 	public GameLogic(int level, int wordCap, JTextArea outputArea, JTextField inputField, JButton start, ArrayList<GameListener> listeners) {
 		_level = level;
@@ -42,7 +43,7 @@ public class GameLogic {
 		_inputField = inputField;
 		_start = start;
 		_statsModel = new StatsModel(level);
-		_statsModelAdapter = new StatsModelAdapter(_statsModel, _numWordCorrect);
+		_statsModelAdapter = new StatsModelAdapter(_statsModel, 0);
 	}
 	
 	private void getUserInput(final String randomWord,final JTextField input, final JTextArea output) {
@@ -51,7 +52,7 @@ public class GameLogic {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (cnt < 2) {
-					String command = "";
+//					String command = "";
 					String userInput = input.getText();
 					userIn = userInput;
 					input.setText("");
@@ -61,10 +62,12 @@ public class GameLogic {
 						cnt += 3;
 						wordIsCorrect();
 						try {
-							command = "echo Correct. | festival --tts";
-							ProcessBuilder npb = new ProcessBuilder("bash", "-c", command);
-							Process process = npb.start();
-							process.waitFor();
+							_command = "echo Correct. | festival --tts";
+							VoiceWorker worker = new VoiceWorker(_command);
+							worker.execute();
+//							ProcessBuilder npb = new ProcessBuilder("bash", "-c", command);
+//							Process process = npb.start();
+//							process.waitFor();
 							output.append("Correct. \n");
 							fin = true;
 						} catch (Exception e1) {
@@ -74,17 +77,19 @@ public class GameLogic {
 						cnt += 1;
 						try {
 							if (cnt == 1) {
-								command = "echo Incorrect. Please try again.... " + randomWord + "... " + randomWord + " | festival --tts";
+								_command = "echo Incorrect. Please try again.... " + randomWord + "... " + randomWord + " | festival --tts";
 								output.append("Incorrect. Please try again.\n");
 								output.append("Enter your selection: ");
 							} else {
 								fin = true;
-								command = "echo Incorrect. | festival --tts";
+								_command = "echo Incorrect. | festival --tts";
 								output.append("Incorrect.\n");
 							}
-							ProcessBuilder npb = new ProcessBuilder("bash", "-c", command);
-							Process process = npb.start();
-							process.waitFor();
+							VoiceWorker worker = new VoiceWorker(_command);
+							worker.execute();
+//							ProcessBuilder npb = new ProcessBuilder("bash", "-c", command);
+//							Process process = npb.start();
+//							process.waitFor();
 						} catch (Exception e2) {
 							e2.printStackTrace();
 						}
@@ -95,41 +100,59 @@ public class GameLogic {
 //					System.out.println(_wordCap);
 					if (fin && _wordCap > 1) {
 						GameLogic experimentalNewGame = new GameLogic(_level, _wordCap-1, _outputArea, _inputField, _start, _listeners);
-						experimentalNewGame.playGame();
-					} else if (_wordCap == 1) {
-						int test = JOptionPane.showConfirmDialog(null, "Would you like to move on to the next level?", "Level finished", JOptionPane.YES_NO_OPTION);
-						switch(test) {
-						case JOptionPane.YES_OPTION:
-							_level++;
-							_wordCap = 10;
-							_start.setVisible(true);
-							break;
-						case JOptionPane.NO_OPTION:
-							_wordCap = 10;
-							_start.setVisible(true);
-							break;
-						default:
-							break;
+						experimentalNewGame.playGame(_words);
+					} else if (fin && _wordCap == 1) {
+						if (_level < 11) {
+							int test = JOptionPane.showConfirmDialog(null, "Would you like to move on to the next level?", "Level finished", JOptionPane.YES_NO_OPTION);
+							switch(test) {
+							case JOptionPane.YES_OPTION:
+								_start.setText("Begin the next level");
+								_start.setVisible(true);
+								break;
+							case JOptionPane.NO_OPTION:
+								_start.setText("Repeat the same level");
+								_start.setVisible(true);
+								break;
+							default:
+								break;
+							}
+						} else {
+							int test = JOptionPane.showConfirmDialog(null, "Would you like to repeat this level?", "Level finished", JOptionPane.YES_NO_OPTION);
+							switch(test) {
+							case JOptionPane.YES_OPTION:
+								_start.setText("Repeat the same level");
+								_start.setVisible(true);
+								break;
+							case JOptionPane.NO_OPTION:
+								_start.setText("Finish the quiz");
+								_start.setVisible(true);
+								break;
+							default:
+								break;
+							}
 						}
 					}
 				}
 			}
 		});
 	}
-	public void playGame() {
-		GameConfig config = GameConfig.instance(); 
-		_words = config.getLevelWords(_level); 
+	public void playGame(ArrayList<String> words) {
+//		GameConfig config = GameConfig.instance(); 
+//		_words = config.getLevelWords(_level); 
+		_words = words;
 		String randomWord = getRandomWord(_words);
-		System.out.println(randomWord);
 		_outputArea.append("Enter your selection: ");
 		getUserInput(randomWord, _inputField, _outputArea);
+		System.out.println(randomWord);
 		try {			
-
-			String command = "echo Please spell.... " + randomWord + " | festival --tts";
-			ProcessBuilder pb = new ProcessBuilder("bash", "-c", command);
-			Process process = pb.start();
-			process.waitFor();		
-			process.destroy();
+			_command = "echo Please spell.... " + randomWord + " | festival --tts";
+			VoiceWorker worker = new VoiceWorker(_command);
+			worker.execute();
+//			System.out.println(command);
+//			ProcessBuilder pb = new ProcessBuilder("bash", "-c", command);
+//			Process process = pb.start();
+//			process.waitFor();		
+//			process.destroy();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
