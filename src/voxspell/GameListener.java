@@ -2,4 +2,5 @@ package voxspell;
 
 public interface GameListener {
 	void updateProgressBar();
+	int getLength();
 }
