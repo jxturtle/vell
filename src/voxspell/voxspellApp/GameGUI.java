@@ -12,7 +12,6 @@ import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
@@ -42,8 +41,7 @@ public class GameGUI extends JPanel {
 	private GameLogic _game;
 	private ArrayList<String> _words;
 	private GameConfig _config;
-//	private JPanel _titleScreenPanel;
-	private static JFrame _frame = TitleScreen.frame;
+	
 	
 	public GameGUI(int level) {
 		_level = level;
@@ -54,9 +52,13 @@ public class GameGUI extends JPanel {
 		_start.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				_start.setVisible(false);
+//				GameConfig config = new GameConfig();
+//				_words = config.getLevelWords(_level);
 				setUpNewLevelGame();
+
 			}
 		});
+		
 	}
 	public void setUpNewLevelGame() {	
 		_statsModels[_level-1].setCorrect(0);
@@ -66,12 +68,12 @@ public class GameGUI extends JPanel {
 		_outputArea.append("==============================\n");
 		if (_start.getText().equals("Begin the next level")) {
 			_level++;
-//			_words = _config.getLevelWords(_level);
-		} else if (_start.getText().equals("Repeat the same level")){
+			_words = _config.getLevelWords(_level);
+		} else {
 			_statsModelAdapters[_level-1].setLength(0);
+//			_statsModels[_level-1].setCorrect(0);
+			
 			_config = new GameConfig();
-		} else if (_start.getText().equals("Finish the quiz")){
-			_frame.dispose();
 		}
 		_words = _config.getLevelWords(_level);
 		ArrayList<GameListener> _listeners = new ArrayList<GameListener>();
@@ -79,6 +81,7 @@ public class GameGUI extends JPanel {
 		_statsModels[_level-1].compute(0);		
 		_game = new GameLogic(_level, 10, _outputArea, _inputField, _start, _listeners);
 		_game.playGame(_words);
+		System.out.println("Level is " + _level);
 	}
 	private void buildGUI() {
 		_comboBoxModel = new GameComboBoxModel();

@@ -11,6 +11,8 @@ public class VoiceWorker extends SwingWorker<Void, Void>{
 
 	@Override
 	protected Void doInBackground() throws Exception {
+		//System.out.println("Doing in background...");
+		System.out.println(_command);
 		ProcessBuilder pb = new ProcessBuilder("bash", "-c", _command);
 		Process process = pb.start();
 		process.waitFor();

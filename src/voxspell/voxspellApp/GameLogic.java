@@ -29,8 +29,8 @@ public class GameLogic {
 	private int cnt;
 	private int _level;
 	String _command;
-	private StatsModel _statsModel;
-	private StatsModelAdapter _statsModelAdapter;
+//	private StatsModel _statsModel;
+//	private StatsModelAdapter _statsModelAdapter;
 	private ArrayList<String> _words;
 	private GameConfig _config;
 //	private int _numWordCorrect;
@@ -42,8 +42,8 @@ public class GameLogic {
 		_outputArea = outputArea;
 		_inputField = inputField;
 		_start = start;
-		_statsModel = new StatsModel(level);
-		_statsModelAdapter = new StatsModelAdapter(_statsModel, 0);
+//		_statsModel = new StatsModel(level);
+//		_statsModelAdapter = new StatsModelAdapter(_statsModel, 0);
 	}
 	
 	private void getUserInput(final String randomWord,final JTextField input, final JTextArea output) {
@@ -51,6 +51,8 @@ public class GameLogic {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				//System.out.println(_statsModel.getCorrect() + " " + "correct");
+//				System.out.println(_statsModelAdapter.getLength() + " " + "length");
 				if (cnt < 2) {
 //					String command = "";
 					String userInput = input.getText();
@@ -61,6 +63,8 @@ public class GameLogic {
 					if (randomWord.equalsIgnoreCase(userInput)) {
 						cnt += 3;
 						wordIsCorrect();
+					
+						
 						try {
 							_command = "echo Correct. | festival --tts";
 							VoiceWorker worker = new VoiceWorker(_command);
@@ -77,6 +81,7 @@ public class GameLogic {
 						cnt += 1;
 						try {
 							if (cnt == 1) {
+								//System.out.println(_statsModelAdapter.getLength() + " " + "length");
 								_command = "echo Incorrect. Please try again.... " + randomWord + "... " + randomWord + " | festival --tts";
 								output.append("Incorrect. Please try again.\n");
 								output.append("Enter your selection: ");
@@ -98,10 +103,13 @@ public class GameLogic {
 					//3 is for correct
 					//4 is for faulted
 //					System.out.println(_wordCap);
-					if (fin && _wordCap > 1) {
+
+					System.out.println(_listeners.get(0).getLength() < 9);
+					if (fin && _wordCap > 1 && _listeners.get(0).getLength() < 9) {
 						GameLogic experimentalNewGame = new GameLogic(_level, _wordCap-1, _outputArea, _inputField, _start, _listeners);
 						experimentalNewGame.playGame(_words);
-					} else if (fin && _wordCap == 1) {
+					} else if (fin && _wordCap == 1 || _listeners.get(0).getLength() >= 9) {
+						System.out.println(_level);
 						if (_level < 11) {
 							int test = JOptionPane.showConfirmDialog(null, "Would you like to move on to the next level?", "Level finished", JOptionPane.YES_NO_OPTION);
 							switch(test) {
@@ -124,8 +132,11 @@ public class GameLogic {
 								_start.setVisible(true);
 								break;
 							case JOptionPane.NO_OPTION:
-								_start.setText("Finish the quiz");
-								_start.setVisible(true);
+								_outputArea.append("==============================\n");
+								_outputArea.append("Game has finished. \n");
+								_outputArea.append("==============================\n");
+								//_start.setText("Finish the quiz");
+								//_start.setVisible(true);
 								break;
 							default:
 								break;
@@ -137,6 +148,8 @@ public class GameLogic {
 		});
 	}
 	public void playGame(ArrayList<String> words) {
+//		System.out.println(_statsModelAdapter.getLength() + " " + "length");
+//		System.out.println(_statsModel.getCorrect() + " " + "correct");
 //		GameConfig config = GameConfig.instance(); 
 //		_words = config.getLevelWords(_level); 
 		_words = words;

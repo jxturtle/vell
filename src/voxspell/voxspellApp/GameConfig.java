@@ -61,12 +61,9 @@ public class GameConfig {
 	}
 	
 	
-	
-	@SuppressWarnings("unchecked")
 	public ArrayList<String> getLevelWords(int level) { 
 		
 		_words = _finalWordMap.get(level);
-//		_wordsCopy = (ArrayList<String>) _words.clone();
 		return _words;
 	}
 //	
