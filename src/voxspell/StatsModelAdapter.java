@@ -10,7 +10,17 @@ public class StatsModelAdapter implements GameListener {
 	
 	@Override
 	public void updateProgressBar() {
+		System.out.println(_length + " " + "length");
 		_length++;
 		_adaptee.compute(_length);
+	}
+	
+	public void setLength(int correct) {
+		_length = correct;
+	}
+
+	public int getLength() {
+		return _length;
+		
 	}
 }

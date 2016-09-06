@@ -23,6 +23,13 @@ public class StatsModel extends JPanel {
 		repaint();
 	}
 	
+	public void setCorrect(int wordsCorrect) {
+		_wordsCorrect = wordsCorrect;
+	}
+	
+	public int getCorrect() {
+		return _wordsCorrect;
+	}
 	/**
 	 * Refreshes the appearance of this JComponent. This method performs the
 	 * actual drawing of the bar chart.
