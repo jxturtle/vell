@@ -1,6 +1,5 @@
 package voxspell;
 
-
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -11,15 +10,14 @@ import javax.swing.JPanel;
 public class StatsModel extends JPanel {
 
 	private static final int BAR_HEIGHT = 20;
-	private int _level;
-	private int _wordsCorrect;
+	private int _level, _wordsCorrect, _color;
 	
 	public StatsModel(int level) {
 		_level = level;
-		
 	}
-	public void compute(int wordsCorrect) {
+	public void compute(int wordsCorrect, int color) {
 		_wordsCorrect = wordsCorrect;
+		_color = color;
 		repaint();
 	}
 	
@@ -36,24 +34,19 @@ public class StatsModel extends JPanel {
 	 */
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		
-		if(_wordsCorrect == 0) {
-			return;
-		} else if(_wordsCorrect <= 3) {
+
+		if (_color >= 2) {
 			g.setColor(Color.RED);
-		} else if (_wordsCorrect <= 6) {
+		} else if (_color == 1) {
 			g.setColor(Color.YELLOW);
 		} else {
-			g.setColor(Color.GREEN); 
+			g.setColor(Color.GREEN);
 		}
-		g.fillRect(0, 5, _wordsCorrect*30, BAR_HEIGHT);
-		
-//		int x = MARGIN;
-//		for (int i = 0; i < 11; i++) {
-//			g.setColor(Color.GREEN);
-//			g.fillRect(0, x, _wordsCorrect*10, BAR_HEIGHT);
-//			x += BAR_HEIGHT + VERTICAL_GAP;
+
+//		if(_wordsCorrect == 0) {
+//			return;
+//		} else {
+			g.fillRect(0, 5, _wordsCorrect*30, BAR_HEIGHT);
 //		}
 	}
-
 }
