@@ -78,7 +78,7 @@ public class GameGUI extends JPanel {
 		_words = _config.getLevelWords(_level);
 		ArrayList<GameListener> _listeners = new ArrayList<GameListener>();
 		_listeners.add(_statsModelAdapters[_level-1]);
-		_statsModels[_level-1].compute(0);		
+		_statsModels[_level-1].compute(0, 0);		
 		_game = new GameLogic(_level, 10, _outputArea, _inputField, _start, _listeners);
 		_game.playGame(_words);
 		System.out.println("Level is " + _level);
@@ -122,7 +122,7 @@ public class GameGUI extends JPanel {
 			_levelLabelPanels[i].add(_levelLabels[i]);
 			_levelPanels[i].add(_levelLabelPanels[i], BorderLayout.WEST);
 			_statsModels[i] = new StatsModel(i+1);
-			_statsModelAdapters[i] = new StatsModelAdapter(_statsModels[i], 0);
+			_statsModelAdapters[i] = new StatsModelAdapter(_statsModels[i], 0, 0);
 //			_statsModels[i].compute(_wordsCorrect);
 			_levelPanels[i].add(_statsModels[i], BorderLayout.CENTER);
 			_rightPanel.add(_levelPanels[i]);

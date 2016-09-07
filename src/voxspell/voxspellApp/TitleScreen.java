@@ -9,10 +9,12 @@ import java.awt.event.ActionListener;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
 
 public class TitleScreen extends JFrame implements ActionListener {
@@ -101,8 +103,7 @@ public class TitleScreen extends JFrame implements ActionListener {
 			}
 		}
 	}
-
-	public static void main(String[] args) {
+	private static void createAndShowGUI() {
 		frame = new TitleScreen();
 		frame.setSize(800, 600);
 		frame.setLocationRelativeTo(null);
@@ -110,5 +111,13 @@ public class TitleScreen extends JFrame implements ActionListener {
 		frame.setResizable(false);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setTitle("VOXSPELL");
+	}
+	public static void main(String[] args) {
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				createAndShowGUI();
+			}
+		});
 	}
 }
