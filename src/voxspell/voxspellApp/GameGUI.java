@@ -36,31 +36,32 @@ public class GameGUI extends JPanel {
 	private StatsModel[] _statsModels;
 	private JPanel[] _levelPanels, _levelLabelPanels;
 	private JLabel[] _levelLabels;
-//	private int _wordsCorrect;
 	private StatsModelAdapter[] _statsModelAdapters;
 	private GameLogic _game;
 	private ArrayList<String> _words;
 	private GameConfig _config;
 	
-	
 	public GameGUI(int level) {
 		_level = level;
 		_config = new GameConfig();
-		
 		buildGUI();
-		
-		_start.addActionListener(new ActionListener() {
+		setUpListeners(_start, _inputField);
+	}
+	private void setUpListeners(final JButton start, final JTextField input) {
+		start.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				_start.setVisible(false);
-//				GameConfig config = new GameConfig();
-//				_words = config.getLevelWords(_level);
+				start.setVisible(false);
 				setUpNewLevelGame();
 
 			}
 		});
-		
+		input.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				_submit.doClick();
+			}
+		});
 	}
-	public void setUpNewLevelGame() {	
+	private void setUpNewLevelGame() {	
 		_statsModels[_level-1].setCorrect(0);
 		_outputArea.append("\n");
 		_outputArea.append("Starting a new Spelling Quiz Game...\n");
@@ -79,7 +80,7 @@ public class GameGUI extends JPanel {
 		ArrayList<GameListener> _listeners = new ArrayList<GameListener>();
 		_listeners.add(_statsModelAdapters[_level-1]);
 		_statsModels[_level-1].compute(0, 0);		
-		_game = new GameLogic(_level, 10, _outputArea, _inputField, _start, _listeners);
+		_game = new GameLogic(_level, 10, _outputArea, _inputField, _start, _submit, _listeners);
 		_game.playGame(_words);
 		System.out.println("Level is " + _level);
 	}
@@ -196,6 +197,4 @@ public class GameGUI extends JPanel {
 
 		}
 	}
-
-	
 }
