@@ -19,7 +19,7 @@ public class GameLogic {
 	private int _wordCap;
 	private JTextArea _outputArea;
 	private JTextField _inputField;
-	private JButton _start;
+	private JButton _start, _submit;
 	private String userIn;
 	private boolean fin;
 	private int cnt;
@@ -27,17 +27,18 @@ public class GameLogic {
 	String _command;
 	private ArrayList<String> _words;
 
-	public GameLogic(int level, int wordCap, JTextArea outputArea, JTextField inputField, JButton start, ArrayList<GameListener> listeners) {
+	public GameLogic(int level, int wordCap, JTextArea outputArea, JTextField inputField, JButton start, JButton submit, ArrayList<GameListener> listeners) {
 		_level = level;
 		_listeners = listeners;
 		_wordCap = wordCap;
 		_outputArea = outputArea;
 		_inputField = inputField;
 		_start = start;
+		_submit = submit;
 	}
 	
-	private void getUserInput(final String randomWord,final JTextField input, final JTextArea output) {
-		input.addActionListener(new ActionListener() {
+	private void getUserInput(final String randomWord,final JTextField input, final JTextArea output, final JButton submit) {
+		submit.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (cnt < 2) {
@@ -79,7 +80,7 @@ public class GameLogic {
 					//3 is for correct
 					//4 is for faulted
 					if (fin && _wordCap > 1 && _listeners.get(0).getLength() < 9) {
-						GameLogic experimentalNewGame = new GameLogic(_level, _wordCap-1, _outputArea, _inputField, _start, _listeners);
+						GameLogic experimentalNewGame = new GameLogic(_level, _wordCap-1, _outputArea, _inputField, _start, _submit, _listeners);
 						experimentalNewGame.playGame(_words);
 					} else if (fin && _wordCap == 1 || _listeners.get(0).getLength() >= 9) {
 						if (_level < 11) {
@@ -121,7 +122,7 @@ public class GameLogic {
 		_words = words;
 		String randomWord = getRandomWord(_words);
 		_outputArea.append("Enter your selection: ");
-		getUserInput(randomWord, _inputField, _outputArea);
+		getUserInput(randomWord, _inputField, _outputArea, _submit);
 		System.out.println(randomWord);
 		try {			
 			_command = "echo Please spell.... " + randomWord + " | festival --tts";
