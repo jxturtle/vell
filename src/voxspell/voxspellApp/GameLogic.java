@@ -45,13 +45,14 @@ public class GameLogic {
 					String userInput = input.getText();
 					userIn = userInput;
 					input.setText("");
+//					input.setEnabled(false);
 					output.append(userIn + "\n");
 					if (randomWord.equalsIgnoreCase(userInput)) {
 						cnt += 3;
 						fire(GameEvent.makeCorrectEvent());
 						try {
 							_command = "echo Correct. | festival --tts";
-							VoiceWorker worker = new VoiceWorker(0, _command);
+							VoiceWorker worker = new VoiceWorker(0, _command, _inputField);
 							worker.execute();
 							output.append("Correct. \n");
 							fin = true;
@@ -70,7 +71,7 @@ public class GameLogic {
 								_command = "echo Incorrect. | festival --tts";
 								fire(GameEvent.makeIncorrectEvent());
 							}
-							VoiceWorker worker = new VoiceWorker(0, _command);
+							VoiceWorker worker = new VoiceWorker(0, _command, _inputField);
 							worker.execute();
 						} catch (Exception e2) {
 							e2.printStackTrace();
@@ -122,15 +123,17 @@ public class GameLogic {
 		_words = words;
 		String randomWord = getRandomWord(_words);
 		_outputArea.append("Enter your selection: ");
+//		_inputField.setEnabled(false);
 		getUserInput(randomWord, _inputField, _outputArea, _submit);
 		System.out.println(randomWord);
 		try {			
 			_command = "echo Please spell.... " + randomWord + " | festival --tts";
-			VoiceWorker worker = new VoiceWorker(1000, _command);
+			VoiceWorker worker = new VoiceWorker(1000, _command, _inputField);
 			worker.execute();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		fire(GameEvent.makeFestivalEvent(), randomWord);
 	}
 	
 	public String getRandomWord(ArrayList<String> words) {
@@ -142,6 +145,11 @@ public class GameLogic {
 	public void fire(GameEvent e) {
 		for (GameListener listener : _listeners) {
 			listener.updateProgressBar(e);
+		}
+	}
+	public void fire(GameEvent e, String word) {
+		for (GameListener listener : _listeners) {
+			listener.setWord(e, word);
 		}
 	}
 }

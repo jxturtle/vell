@@ -1,14 +1,17 @@
 package voxspell.voxspellApp;
 
+import javax.swing.JTextField;
 import javax.swing.SwingWorker;
 
 public class VoiceWorker extends SwingWorker<Void, Void>{
 	private int _sleep;
 	private String _command;
+	private JTextField _inputField;
 	
-	public VoiceWorker(int sleep, String command) {
+	public VoiceWorker(int sleep, String command, JTextField inputField) {
 		_sleep = sleep;
 		_command = command;
+		_inputField = inputField;
 	}
 
 	@Override
@@ -19,5 +22,8 @@ public class VoiceWorker extends SwingWorker<Void, Void>{
 		process.waitFor();
 		process.destroy();
 		return null;
-	}	
+	}
+//	protected void done() {
+//		_inputField.setEnabled(true);
+//	}
 }

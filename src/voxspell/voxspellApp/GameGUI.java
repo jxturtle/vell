@@ -45,9 +45,9 @@ public class GameGUI extends JPanel {
 		_level = level;
 		_config = new GameConfig();
 		buildGUI();
-		setUpListeners(_start, _inputField);
+		setUpListeners(_start, _inputField, _listenAgain);
 	}
-	private void setUpListeners(final JButton start, final JTextField input) {
+	private void setUpListeners(final JButton start, final JTextField input, final JButton listenAgain) {
 		start.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				start.setVisible(false);
@@ -58,6 +58,14 @@ public class GameGUI extends JPanel {
 		input.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				_submit.doClick();
+			}
+		});
+		listenAgain.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String wordToRepeat = _statsModelAdapters[_level-1].getWord();
+				String command = "echo " + wordToRepeat + " | festival --tts";
+				VoiceWorker worker = new VoiceWorker(0, command, _inputField);
+				worker.execute();
 			}
 		});
 	}
@@ -82,7 +90,6 @@ public class GameGUI extends JPanel {
 		_statsModels[_level-1].compute(0, 0);		
 		_game = new GameLogic(_level, 10, _outputArea, _inputField, _start, _submit, _listeners);
 		_game.playGame(_words);
-		System.out.println("Level is " + _level);
 	}
 	private void buildGUI() {
 		_comboBoxModel = new GameComboBoxModel();
@@ -123,7 +130,7 @@ public class GameGUI extends JPanel {
 			_levelLabelPanels[i].add(_levelLabels[i]);
 			_levelPanels[i].add(_levelLabelPanels[i], BorderLayout.WEST);
 			_statsModels[i] = new StatsModel(i+1);
-			_statsModelAdapters[i] = new StatsModelAdapter(_statsModels[i], 0, 0);
+			_statsModelAdapters[i] = new StatsModelAdapter(_statsModels[i], 0, 0, "");
 //			_statsModels[i].compute(_wordsCorrect);
 			_levelPanels[i].add(_statsModels[i], BorderLayout.CENTER);
 			_rightPanel.add(_levelPanels[i]);
