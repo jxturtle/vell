@@ -64,8 +64,16 @@ public class GameGUI extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				String wordToRepeat = _statsModelAdapters[_level-1].getWord();
 				String command = "echo " + wordToRepeat + " | festival --tts";
-				VoiceWorker worker = new VoiceWorker(0, command, _inputField);
+				VoiceWorker worker = new VoiceWorker(0, command);
 				worker.execute();
+			}
+		});
+		
+		_changeVoice.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String voice = _comboBoxModel.getSelectedItem().toString();
+				System.out.println(voice);//setvoice
+		
 			}
 		});
 	}
@@ -173,8 +181,9 @@ public class GameGUI extends JPanel {
 		_voiceOptions = new JComboBox(_comboBoxModel);
 		_changeVoice = new JButton("Confirm voice change");
 		
-		_optionPanel.add(_voiceOptions);
-		_optionPanel.add(_changeVoice);
+		_optionPanel.setLayout(new BorderLayout());
+		_optionPanel.add(_voiceOptions, BorderLayout.WEST);
+		_optionPanel.add(_changeVoice, BorderLayout.EAST);
 
 		_leftPanel.setLayout(new BorderLayout());
 		_leftPanel.add(_leftTopPanel, BorderLayout.CENTER);
@@ -194,8 +203,9 @@ public class GameGUI extends JPanel {
 	private class GameComboBoxModel extends DefaultComboBoxModel {
 		public GameComboBoxModel() {
 			addElement("Default");
-			addElement("Placeholder 1");
-			addElement("Placeholder 2");
+			addElement("British English");
+			addElement("Spanish");
+			addElement("New Zealand");
 			//Empty implementation so far, get the voice options
 			//What are the voice options?
 			//for (String voices : voiceOptions) {
