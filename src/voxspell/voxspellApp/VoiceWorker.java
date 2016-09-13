@@ -5,10 +5,12 @@ import javax.swing.SwingWorker;
 import java.io.OutputStream;
 
 public class VoiceWorker extends SwingWorker<Void, Void>{
+	
 	private int _sleep;
 	private String _command;
 	Process process;
 	OutputStream output;
+	private String _voice;
 	
 	public VoiceWorker(int sleep, String command) {
 		_sleep = sleep;
@@ -33,4 +35,8 @@ public class VoiceWorker extends SwingWorker<Void, Void>{
 //		process.destroy();
 		return null;
 	}	
+	
+	public void setVoice(String voice) {
+		_voice = voice;
+	}
 }
