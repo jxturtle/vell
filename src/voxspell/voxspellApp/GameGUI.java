@@ -45,22 +45,22 @@ public class GameGUI extends JPanel {
 		_level = level;
 		_config = new GameConfig();
 		buildGUI();
-		setUpListeners(_start, _inputField, _listenAgain);
+		setUpListeners();
 	}
-	private void setUpListeners(final JButton start, final JTextField input, final JButton listenAgain) {
-		start.addActionListener(new ActionListener() {
+	private void setUpListeners() {
+		_start.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				start.setVisible(false);
+				_start.setVisible(false);
 				setUpNewLevelGame();
 
 			}
 		});
-		input.addActionListener(new ActionListener() {
+		_inputField.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				_submit.doClick();
 			}
 		});
-		listenAgain.addActionListener(new ActionListener() {
+		_listenAgain.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String wordToRepeat = _statsModelAdapters[_level-1].getWord();
 				String command = "echo " + wordToRepeat + " | festival --tts";
@@ -134,7 +134,7 @@ public class GameGUI extends JPanel {
 			_levelPanels[i].setLayout(new BorderLayout());
 			_levelPanels[i].setPreferredSize(new Dimension(440, 50));
 			_levelLabels[i] = new JLabel("Level " + Integer.toString(i+1));
-			_levelLabelPanels[i].setPreferredSize(new Dimension(100, 50));
+			_levelLabelPanels[i].setPreferredSize(new Dimension(90, 50));
 			_levelLabelPanels[i].add(_levelLabels[i]);
 			_levelPanels[i].add(_levelLabelPanels[i], BorderLayout.WEST);
 			_statsModels[i] = new StatsModel(i+1);

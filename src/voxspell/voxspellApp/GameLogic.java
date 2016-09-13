@@ -52,7 +52,7 @@ public class GameLogic {
 						fire(GameEvent.makeCorrectEvent());
 						try {
 							_command = "echo Correct. | festival --tts";
-							VoiceWorker worker = new VoiceWorker(0, _command, _inputField);
+							VoiceWorker worker = new VoiceWorker(0, _command);
 							worker.execute();
 							output.append("Correct. \n");
 							fin = true;
@@ -71,7 +71,7 @@ public class GameLogic {
 								_command = "echo Incorrect. | festival --tts";
 								fire(GameEvent.makeIncorrectEvent());
 							}
-							VoiceWorker worker = new VoiceWorker(0, _command, _inputField);
+							VoiceWorker worker = new VoiceWorker(0, _command);
 							worker.execute();
 						} catch (Exception e2) {
 							e2.printStackTrace();
@@ -128,7 +128,7 @@ public class GameLogic {
 		System.out.println(randomWord);
 		try {			
 			_command = "echo Please spell.... " + randomWord + " | festival --tts";
-			VoiceWorker worker = new VoiceWorker(1000, _command, _inputField);
+			VoiceWorker worker = new VoiceWorker(1000, _command);
 			worker.execute();
 		} catch (Exception e) {
 			e.printStackTrace();
