@@ -25,7 +25,9 @@ public class GameLogic {
 	private int cnt;
 	private int _level;
 	String _command;
+
 	private ArrayList<String> _words;
+	
 
 	public GameLogic(int level, int wordCap, JTextArea outputArea, JTextField inputField, JButton start, JButton submit, ArrayList<GameListener> listeners) {
 		_level = level;
@@ -51,7 +53,7 @@ public class GameLogic {
 						cnt += 3;
 						fire(GameEvent.makeCorrectEvent());
 						try {
-							_command = "echo Correct. | festival --tts";
+							_command = "Correct.";
 							VoiceWorker worker = new VoiceWorker(0, _command);
 							worker.execute();
 							output.append("Correct. \n");
@@ -63,12 +65,12 @@ public class GameLogic {
 						cnt += 1;
 						try {
 							if (cnt == 1) {
-								_command = "echo Incorrect. Please try again.... " + randomWord + "... " + randomWord + " | festival --tts";
+								_command = "Incorrect. Please try again...... " + randomWord + "...... " + randomWord;
 								output.append("Incorrect. Please try again.\n");
 								output.append("Enter your selection: ");
 							} else {
 								fin = true;
-								_command = "echo Incorrect. | festival --tts";
+								_command = "Incorrect.";
 								fire(GameEvent.makeIncorrectEvent());
 							}
 							VoiceWorker worker = new VoiceWorker(0, _command);
@@ -127,7 +129,7 @@ public class GameLogic {
 		getUserInput(randomWord, _inputField, _outputArea, _submit);
 		System.out.println(randomWord);
 		try {			
-			_command = "echo Please spell.... " + randomWord + " | festival --tts";
+			_command = "Please spell...... " + randomWord;
 			VoiceWorker worker = new VoiceWorker(1000, _command);
 			worker.execute();
 		} catch (Exception e) {
