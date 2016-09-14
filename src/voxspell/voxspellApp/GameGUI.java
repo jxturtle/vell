@@ -23,6 +23,8 @@ import javax.swing.text.DefaultCaret;
 import voxspell.GameListener;
 import voxspell.StatsModel;
 import voxspell.StatsModelAdapter;
+import voxspell.VoiceEvent;
+import voxspell.VoiceEvent.VoiceType;
 
 public class GameGUI extends JPanel {
 	private GameComboBoxModel _comboBoxModel;
@@ -63,7 +65,7 @@ public class GameGUI extends JPanel {
 		_listenAgain.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String wordToRepeat = _statsModelAdapters[_level-1].getWord();
-				String command = "echo " + wordToRepeat + " | festival --tts";
+				String command = wordToRepeat;
 				VoiceWorker worker = new VoiceWorker(0, command);
 				worker.execute();
 			}
@@ -71,8 +73,16 @@ public class GameGUI extends JPanel {
 		
 		_changeVoice.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String voice = _comboBoxModel.getSelectedItem().toString();
-				System.out.println(voice);//setvoice
+				String voiceType = _comboBoxModel.getSelectedItem().toString();
+				if (voiceType.equals("British English")) {
+					VoiceEvent.makeBritishEnglishVoice();
+				} else if (voiceType.equals("Spanish")) {
+					VoiceEvent.makeSpanishVoice();
+				} else if (voiceType.equals("New Zealand")) {
+					VoiceEvent.makeNewZealandVoice();
+				} else {
+					VoiceEvent.makeDefaultVoice();
+				}
 		
 			}
 		});
@@ -203,8 +213,8 @@ public class GameGUI extends JPanel {
 	private class GameComboBoxModel extends DefaultComboBoxModel {
 		public GameComboBoxModel() {
 			addElement("Default");
-			addElement("British English");
-			addElement("Spanish");
+			//addElement("British English");
+			//addElement("Spanish");
 			addElement("New Zealand");
 			//Empty implementation so far, get the voice options
 			//What are the voice options?

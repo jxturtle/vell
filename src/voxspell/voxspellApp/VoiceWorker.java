@@ -3,6 +3,8 @@ package voxspell.voxspellApp;
 
 import javax.swing.SwingWorker;
 
+import voxspell.VoiceEvent;
+
 import java.io.OutputStream;
 
 public class VoiceWorker extends SwingWorker<Void, Void>{
@@ -11,7 +13,7 @@ public class VoiceWorker extends SwingWorker<Void, Void>{
 	private String _command;
 	Process process;
 	OutputStream output;
-	private String _voice;
+	private String _voiceType;
 	
 	public VoiceWorker(int sleep, String command) {
 		_sleep = sleep;
@@ -20,11 +22,17 @@ public class VoiceWorker extends SwingWorker<Void, Void>{
 	//output.write("(name_of_voice)n".getBytes());
 	@Override
 	protected Void doInBackground() throws Exception {
+		_voiceType = VoiceEvent.getVoiceType();
+		System.out.println(_voiceType + " #1");
+		System.out.println(VoiceEvent.getVoiceType());
+		System.out.println(_command);
 		Thread.sleep(_sleep);
 		Runtime rt = Runtime.getRuntime();
 		process = rt.exec("festival --pipe");
 		output = process.getOutputStream();
+		output.write(("(_voiceType)n").getBytes());
 		output.write(("(SayText \"" + _command + "\" )n").getBytes());
+		System.out.println(_command);
 		output.flush();
 		process.waitFor();
 		//System.out.println("SayText Hello -o | festival --tts");
@@ -36,8 +44,4 @@ public class VoiceWorker extends SwingWorker<Void, Void>{
 //		process.destroy();
 		return null;
 	}	
-	
-	public void setVoice(String voice) {
-		_voice = voice;
-	}
 }
