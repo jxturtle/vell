@@ -3,7 +3,6 @@ package voxspell.voxspellApp;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -19,10 +18,10 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
 
 public class TitleScreen extends JFrame {
-	private JPanel _mainPanel, _titleScreenPanel, _emptyPanel, _picPanel, _viewPanel, _buttonPanel;
+	private JPanel _mainPanel, _titleScreenPanel, _emptyPanel, _picPanel, _viewPanel, _buttonPanel, _backPanel, _emptyPanel2;
 	private JLabel _picLabel, _label, _welcomeLabel;
 	private ImageIcon _welcome;
-	private JButton _newQuiz, _reviewMistakes, _viewStats;
+	private JButton _newQuiz, _reviewMistakes, _viewStats, _back;
 	private Font font = new Font("Verdana", Font.PLAIN, 20);
 	protected static JFrame frame;
 	public TitleScreen() {
@@ -32,18 +31,30 @@ public class TitleScreen extends JFrame {
 	private void setUpListeners() {
 		_newQuiz.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				_back.setVisible(true);
 				_label.setText("Please select the level of the spelling quiz");
 				_newQuiz.setVisible(false);
 				_reviewMistakes.setVisible(false);
 				_viewStats.setVisible(false);
-				LevelPanel level = new LevelPanel();
+				final LevelPanel level = new LevelPanel();
 				_buttonPanel.add(level);
+				_back.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						_label.setText("Please select one of the game options");
+						level.setVisible(false);
+						_back.setVisible(false);
+						_newQuiz.setVisible(true);
+						_reviewMistakes.setVisible(true);
+						_viewStats.setVisible(true);
+					}
+				});
 			}
 		});
 
 		_reviewMistakes.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				_mainPanel.setVisible(false);
+				_back.setVisible(true);
 				ReviewMistakes review = new ReviewMistakes();
 				add(review);
 				review.setVisible(true);
@@ -52,6 +63,7 @@ public class TitleScreen extends JFrame {
 		_viewStats.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				_mainPanel.setVisible(false);
+				_back.setVisible(true);
 				Statistics statsScreen = new Statistics();
 				add(statsScreen);
 				statsScreen.setVisible(true);
@@ -62,9 +74,21 @@ public class TitleScreen extends JFrame {
 	private void buildGUI() {
 		_mainPanel = new JPanel();
 		_titleScreenPanel = new JPanel();
-
+		_back = new JButton("<");
+		_back.setFont(font);
+		_back.setPreferredSize(new Dimension(50,35));
+//		_back.setPreferredSize(new Dimension(100,50));
+		_backPanel = new JPanel();
+		_backPanel.setPreferredSize(new Dimension(60,100));
 		_emptyPanel = new JPanel();
-		_emptyPanel.setPreferredSize(new Dimension(600, 100));
+		_emptyPanel.setLayout(new BorderLayout());
+		_back.setVisible(false);
+		_emptyPanel.setPreferredSize(new Dimension(800, 100));
+		_emptyPanel2 = new JPanel();
+		_emptyPanel2.setPreferredSize(new Dimension(740,100));
+		_emptyPanel.add(_backPanel, BorderLayout.WEST);
+		_emptyPanel.add(_emptyPanel2, BorderLayout.EAST);
+		_backPanel.add(_back);
 		_picPanel = new JPanel();
 		_welcome = new ImageIcon("welcome.jpg");
 		_welcomeLabel = new JLabel(_welcome);
@@ -92,7 +116,7 @@ public class TitleScreen extends JFrame {
 		_buttonPanel.setPreferredSize(new Dimension(600, 130));
 		
 		_mainPanel.add(_titleScreenPanel, BorderLayout.NORTH);
-		_mainPanel.add(_buttonPanel, BorderLayout.SOUTH);
+		_mainPanel.add(_buttonPanel, BorderLayout.CENTER);
 
 		add(_mainPanel);
 	}
