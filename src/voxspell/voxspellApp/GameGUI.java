@@ -47,6 +47,7 @@ public class GameGUI extends JPanel {
 		_level = level;
 		_config = new GameConfig();
 		buildGUI();
+		VoiceEvent.makeDefaultVoice();
 		setUpListeners();
 	}
 	private void setUpListeners() {

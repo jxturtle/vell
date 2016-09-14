@@ -23,18 +23,17 @@ public class VoiceWorker extends SwingWorker<Void, Void>{
 	@Override
 	protected Void doInBackground() throws Exception {
 		_voiceType = VoiceEvent.getVoiceType();
-		System.out.println(_voiceType + " #1");
-		System.out.println(VoiceEvent.getVoiceType());
-		System.out.println(_command);
 		Thread.sleep(_sleep);
 		Runtime rt = Runtime.getRuntime();
 		process = rt.exec("festival --pipe");
 		output = process.getOutputStream();
-		output.write(("(_voiceType)n").getBytes());
+		
+		output.write(("(" + _voiceType + ")n").getBytes());
+		//output.flush();
 		output.write(("(SayText \"" + _command + "\" )n").getBytes());
-		System.out.println(_command);
+		//System.out.println(_command);
 		output.flush();
-		process.waitFor();
+		//process.waitFor();
 		//System.out.println("SayText Hello -o | festival --tts");
 		//rt.exec("SayText Hello -o");
 		//rt.exec("SayText" + _command + ""
@@ -44,4 +43,6 @@ public class VoiceWorker extends SwingWorker<Void, Void>{
 //		process.destroy();
 		return null;
 	}	
+	
+	
 }

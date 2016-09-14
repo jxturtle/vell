@@ -65,8 +65,8 @@ public class GameLogic {
 						cnt += 1;
 						try {
 							if (cnt == 1) {
-								_command = "Incorrect. Please try again...... " + randomWord + "...... " + randomWord;
-								output.append("Incorrect. Please try again.\n");
+								_command = "Incorrect, please try again......... :" + randomWord + "......... :" + randomWord + ".";
+								output.append("Incorrect, please try again.\n");
 								output.append("Enter your selection: ");
 							} else {
 								fin = true;
@@ -124,12 +124,12 @@ public class GameLogic {
 	public void playGame(ArrayList<String> words) {
 		_words = words;
 		String randomWord = getRandomWord(_words);
+		System.out.println(randomWord);
 		_outputArea.append("Enter your selection: ");
 //		_inputField.setEnabled(false);
 		getUserInput(randomWord, _inputField, _outputArea, _submit);
-		System.out.println(randomWord);
 		try {			
-			_command = "Please spell...... " + randomWord;
+			_command = "Please spell: ....... " + randomWord;
 			VoiceWorker worker = new VoiceWorker(1000, _command);
 			worker.execute();
 		} catch (Exception e) {
