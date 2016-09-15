@@ -5,7 +5,6 @@ import javax.swing.SwingWorker;
 
 import voxspell.VoiceEvent;
 
-import java.io.IOException;
 import java.io.OutputStream;
 
 public class VoiceWorker extends SwingWorker<Void, Void>{
@@ -19,35 +18,35 @@ public class VoiceWorker extends SwingWorker<Void, Void>{
 	public VoiceWorker(int sleep, String command) {
 		_sleep = sleep;
 		_command = command;
-		_voiceType = VoiceEvent.getVoiceType();
-//		Runtime rt = Runtime.getRuntime();
-//		try {
-//			process = rt.exec("festival -b");
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		output = process.getOutputStream();
-
 	}
+	//output.write("(name_of_voice)n".getBytes());
 	@Override
 	protected Void doInBackground() throws Exception {
+		_voiceType = VoiceEvent.getVoiceType();
 		Thread.sleep(_sleep);
 		Runtime rt = Runtime.getRuntime();
-//		try {
-			process = rt.exec("festival -b '(" +_voiceType+")' '(SayText \"" + _command + "\")'");
-			System.out.println("festival -b '(" +_voiceType+")' '(SayText \"" + _command + "\")'");
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
+		process = rt.exec("festival --pipe");
 		output = process.getOutputStream();
-//		output.write(("(_voiceType)n").getBytes());
-//		output.flush();
-//		output.write(("(SayText \"" + _command + "\" )n").getBytes());
+		
+		output.write(("(" + _voiceType + ")n").getBytes());
+		//output.flush();
+		output.write(("(SayText \"" + _command + "\" )n").getBytes());
+		output.write(("(exit)n").getBytes());
 		output.flush();
-		process.waitFor();
 		process.destroy();
-//		process.destroyForcibly();
+		//System.out.println(_command);
+		//output.flush();
+		//process.destroyForcibly();
+		//process.waitFor();
+		//System.out.println("SayText Hello -o | festival --tts");
+		//rt.exec("SayText Hello -o");
+		//rt.exec("SayText" + _command + ""
+//		ProcessBuilder pb = new ProcessBuilder("bash", "-c", _command);
+//		Process process = pb.start();
+//		process.waitFor();
+//		process.destroy();
 		return null;
 	}	
+	
+	
 }
