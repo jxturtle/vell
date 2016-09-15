@@ -17,10 +17,10 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
 
-public class TitleScreen extends JFrame {
-	private JPanel _mainPanel, _titleScreenPanel, _emptyPanel, _picPanel, _viewPanel, _buttonPanel, _backPanel, _emptyPanel2;
+public class TitleScreen extends JPanel {
+	private JPanel _mainPanel, _titleScreenPanel, _emptyPanel, _picPanel, _viewPanel, _buttonPanel, _backButtonPanel, _backPanel, _emptyPanel2;
 	private JLabel _picLabel, _label, _welcomeLabel;
-	private ImageIcon _welcome;
+	private ImageIcon _welcome, _backImage;
 	private JButton _newQuiz, _reviewMistakes, _viewStats, _back;
 	private Font font = new Font("Verdana", Font.PLAIN, 20);
 	protected static JFrame frame;
@@ -73,30 +73,18 @@ public class TitleScreen extends JFrame {
 	}
 	private void buildGUI() {
 		_mainPanel = new JPanel();
+		_mainPanel.setPreferredSize(new Dimension(800,600));
 		_titleScreenPanel = new JPanel();
-		_back = new JButton("<");
-		_back.setFont(font);
-		_back.setPreferredSize(new Dimension(50,35));
-//		_back.setPreferredSize(new Dimension(100,50));
-		_backPanel = new JPanel();
-		_backPanel.setPreferredSize(new Dimension(60,100));
 		_emptyPanel = new JPanel();
-		_emptyPanel.setLayout(new BorderLayout());
-		_back.setVisible(false);
-		_emptyPanel.setPreferredSize(new Dimension(800, 100));
-		_emptyPanel2 = new JPanel();
-		_emptyPanel2.setPreferredSize(new Dimension(740,100));
-		_emptyPanel.add(_backPanel, BorderLayout.WEST);
-		_emptyPanel.add(_emptyPanel2, BorderLayout.EAST);
-		_backPanel.add(_back);
+		_emptyPanel.setPreferredSize(new Dimension(800, 90));
 		_picPanel = new JPanel();
 		_welcome = new ImageIcon("welcome.jpg");
 		_welcomeLabel = new JLabel(_welcome);
 		_picPanel.add(_welcomeLabel);
-		_picPanel.setPreferredSize(new Dimension(600, 250));
+		_picPanel.setPreferredSize(new Dimension(600, 220));
 		
 		_viewPanel = new JPanel();
-		_viewPanel.setPreferredSize(new Dimension(600, 70));
+		_viewPanel.setPreferredSize(new Dimension(600, 50));
 		_label = new JLabel("Please select one of the game options", SwingConstants.CENTER);
 		_label.setFont(font);
 		_viewPanel.add(_label);
@@ -110,18 +98,35 @@ public class TitleScreen extends JFrame {
 		_newQuiz = new JButton("New Spelling Quiz");
 		_reviewMistakes = new JButton("Review Mistakes");
 		_viewStats = new JButton("View Statistics");
+		_backButtonPanel = new JPanel();
+		_backButtonPanel.setPreferredSize(new Dimension(800,65));
+		_backPanel = new JPanel();
+		_backPanel.setPreferredSize(new Dimension(62, 65));
+		_emptyPanel2 = new JPanel();
+		_emptyPanel2.setPreferredSize(new Dimension(728, 65));
+		_backButtonPanel.add(_backPanel);
+		_backButtonPanel.add(_emptyPanel2);
+		_backImage = new ImageIcon("arrow.png");
+		_back = new JButton(_backImage);
+		_backPanel.add(_back);
+		_back.setPreferredSize(new Dimension(55,55));
+		_back.setVisible(false);
+		
 		_buttonPanel.add(_newQuiz);
 		_buttonPanel.add(_reviewMistakes);
 		_buttonPanel.add(_viewStats);
-		_buttonPanel.setPreferredSize(new Dimension(600, 130));
+		_buttonPanel.setPreferredSize(new Dimension(600, 127));
 		
 		_mainPanel.add(_titleScreenPanel, BorderLayout.NORTH);
 		_mainPanel.add(_buttonPanel, BorderLayout.CENTER);
+		_mainPanel.add(_backButtonPanel, BorderLayout.SOUTH);
 
 		add(_mainPanel);
 	}
+
 	private static void createAndShowGUI() {
-		frame = new TitleScreen();
+		frame = new JFrame();
+		frame.add(new TitleScreen());
 		frame.setSize(800, 600);
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
@@ -136,6 +141,9 @@ public class TitleScreen extends JFrame {
 				createAndShowGUI();
 			}
 		});
+	}
+	public JPanel getMainPanel() {
+		return _mainPanel;
 	}
 
 	private class LevelPanel extends JPanel implements ActionListener {
@@ -180,9 +188,12 @@ public class TitleScreen extends JFrame {
 			String levelChosen = ((JButton)e.getSource()).getText();
 			for (int i = 0; i < 11; i++) {
 				if (levelChosen.equals("Level "+Integer.toString(i+1))) {
-					GameGUI game = new GameGUI(i+1);
-					_mainPanel.setVisible(false);
-					frame.add(game);
+					GameGUI game = new GameGUI(i+1, frame);
+					frame.getContentPane().removeAll();
+//					_mainPanel.setVisible(false);
+					frame.getContentPane().add(game);
+					frame.revalidate();
+					frame.repaint();
 				}
 			}
 		}

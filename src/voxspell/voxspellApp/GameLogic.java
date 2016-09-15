@@ -19,7 +19,7 @@ public class GameLogic {
 	private int _wordCap;
 	private JTextArea _outputArea;
 	private JTextField _inputField;
-	private JButton _start, _submit;
+	private JButton _start, _submit, _back;
 	private String userIn;
 	private boolean fin;
 	private int cnt;
@@ -29,13 +29,14 @@ public class GameLogic {
 	private ArrayList<String> _words;
 	
 
-	public GameLogic(int level, int wordCap, JTextArea outputArea, JTextField inputField, JButton start, JButton submit, ArrayList<GameListener> listeners) {
+	public GameLogic(int level, int wordCap, JTextArea outputArea, JTextField inputField, JButton start, JButton back, JButton submit, ArrayList<GameListener> listeners) {
 		_level = level;
 		_listeners = listeners;
 		_wordCap = wordCap;
 		_outputArea = outputArea;
 		_inputField = inputField;
 		_start = start;
+		_back = back;
 		_submit = submit;
 	}
 	
@@ -83,7 +84,7 @@ public class GameLogic {
 					//3 is for correct
 					//4 is for faulted
 					if (fin && _wordCap > 1 && _listeners.get(0).getLength() < 9) {
-						GameLogic experimentalNewGame = new GameLogic(_level, _wordCap-1, _outputArea, _inputField, _start, _submit, _listeners);
+						GameLogic experimentalNewGame = new GameLogic(_level, _wordCap-1, _outputArea, _inputField, _start, _back, _submit, _listeners);
 						experimentalNewGame.playGame(_words);
 					} else if (fin && _wordCap == 1 || _listeners.get(0).getLength() >= 9) {
 						if (_level < 11) {
@@ -92,10 +93,13 @@ public class GameLogic {
 							case JOptionPane.YES_OPTION:
 								_start.setText("Begin the next level");
 								_start.setVisible(true);
+								_back.setVisible(true);
 								break;
 							case JOptionPane.NO_OPTION:
 								_start.setText("Repeat the same level");
 								_start.setVisible(true);
+								_back.setVisible(true);
+
 								break;
 							default:
 								break;
@@ -106,11 +110,15 @@ public class GameLogic {
 							case JOptionPane.YES_OPTION:
 								_start.setText("Repeat the same level");
 								_start.setVisible(true);
+								_back.setVisible(true);
+
 								break;
 							case JOptionPane.NO_OPTION:
 								_outputArea.append("==============================\n");
 								_outputArea.append("Game has finished. \n");
 								_outputArea.append("==============================\n");
+								_back.setVisible(true);
+
 								break;
 							default:
 								break;

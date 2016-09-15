@@ -10,8 +10,10 @@ import java.awt.FlowLayout;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
@@ -29,8 +31,9 @@ import voxspell.VoiceEvent.VoiceType;
 public class GameGUI extends JPanel {
 	private GameComboBoxModel _comboBoxModel;
 	private JComboBox _voiceOptions;
-	private JButton _start, _submit, _listenAgain, _changeVoice;
-	private JPanel _gamePanel, _beginPanel, _leftPanel, _leftTopPanel, _rightPanel, _optionPanel, _inputPanel, _mainPanel;
+	private JButton _start, _submit, _listenAgain, _changeVoice, _back;
+	private ImageIcon _backImage;
+	private JPanel _gamePanel, _beginPanel, _leftPanel, _leftTopPanel, _rightPanel, _optionPanel, _inputPanel, _mainPanel, _bottomPanel, _titlePanel;
 	private JTextArea _outputArea;
 	private JTextField _inputField;
 	private String _voiceSelected;
@@ -42,8 +45,10 @@ public class GameGUI extends JPanel {
 	private GameLogic _game;
 	private ArrayList<String> _words;
 	private GameConfig _config;
+	protected static JFrame _frame;
 	
-	public GameGUI(int level) {
+	public GameGUI(int level, JFrame frame) {
+		_frame = frame;
 		_level = level;
 		_config = new GameConfig();
 		buildGUI();
@@ -51,11 +56,23 @@ public class GameGUI extends JPanel {
 		setUpListeners();
 	}
 	private void setUpListeners() {
+		_back.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				_frame.getContentPane().removeAll();
+//				_gamePanel.setVisible(false);
+				
+				TitleScreen newTitle = new TitleScreen();
+				JPanel title = newTitle.getMainPanel();
+				_frame.getContentPane().add(title);
+				_frame.revalidate();
+				_frame.repaint();
+			}
+		});
 		_start.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				_start.setVisible(false);
+				_back.setVisible(false);
 				setUpNewLevelGame();
-
 			}
 		});
 		_inputField.addActionListener(new ActionListener() {
@@ -84,12 +101,11 @@ public class GameGUI extends JPanel {
 				} else {
 					VoiceEvent.makeDefaultVoice();
 				}
-		
 			}
 		});
 	}
 	private void setUpNewLevelGame() {	
-		_statsModels[_level-1].setCorrect(0);
+		_statsModels[_level-1].setNumber(0,0,9);
 		_outputArea.append("\n");
 		_outputArea.append("Starting a new Spelling Quiz Game...\n");
 		_outputArea.append("Please spell out the ten words.\n");
@@ -98,8 +114,7 @@ public class GameGUI extends JPanel {
 			_level++;
 			_words = _config.getLevelWords(_level);
 		} else {
-			_statsModelAdapters[_level-1].setLength(0);
-//			_statsModels[_level-1].setCorrect(0);
+			_statsModelAdapters[_level-1].setNumber(0,0,9);
 			
 			_config = new GameConfig();
 		}
@@ -107,7 +122,7 @@ public class GameGUI extends JPanel {
 		ArrayList<GameListener> _listeners = new ArrayList<GameListener>();
 		_listeners.add(_statsModelAdapters[_level-1]);
 		_statsModels[_level-1].compute(0, 0);		
-		_game = new GameLogic(_level, 10, _outputArea, _inputField, _start, _submit, _listeners);
+		_game = new GameLogic(_level, 10, _outputArea, _inputField, _start, _back, _submit, _listeners);
 		_game.playGame(_words);
 	}
 	private void buildGUI() {
@@ -115,19 +130,19 @@ public class GameGUI extends JPanel {
 		//Setting up the panels
 		_gamePanel = new JPanel();
 		_gamePanel.setLayout(new BorderLayout());
-		_beginPanel = new JPanel();
-		_beginPanel.setPreferredSize(new Dimension(50, 60));
+		_bottomPanel = new JPanel();
+		_bottomPanel.setPreferredSize(new Dimension(50, 55));
 		_mainPanel = new JPanel();
 		//Main frames for the GUI.
 		_leftTopPanel = new JPanel();
 		_leftPanel = new JPanel();
-		_leftPanel.setPreferredSize(new Dimension(330, 520));
+		_leftPanel.setPreferredSize(new Dimension(330, 500));
 		_rightPanel = new JPanel();
 		//Main game area
 		_leftTopPanel.setPreferredSize(new Dimension(330, 300));
 		
 		//Stats screen
-		_rightPanel.setPreferredSize(new Dimension(440, 520));
+		_rightPanel.setPreferredSize(new Dimension(440, 500));
 
 		//Create main stats panel
 		_rightPanel.setLayout(new GridLayout(11,1));
@@ -202,11 +217,21 @@ public class GameGUI extends JPanel {
 		
 		_mainPanel.add(_leftPanel);
 		_mainPanel.add(_rightPanel);
-		
+		_beginPanel = new JPanel();
 		_start = new JButton("Begin playing");
+		_backImage = new ImageIcon("arrow.png");
+		_back = new JButton(_backImage);
+		_back.setPreferredSize(new Dimension(55,55));
 		_beginPanel.add(_start);
+		JPanel _emptyPanel = new JPanel();
+		_emptyPanel.setPreferredSize(new Dimension(62, 55));
+		_bottomPanel.setLayout(new BorderLayout());
+		_bottomPanel.add(_back, BorderLayout.WEST);
+		_bottomPanel.add(_beginPanel, BorderLayout.CENTER);
+		_bottomPanel.add(_emptyPanel, BorderLayout.EAST);
+
 		_gamePanel.add(_mainPanel, BorderLayout.NORTH);
-		_gamePanel.add(_beginPanel, BorderLayout.CENTER);
+		_gamePanel.add(_bottomPanel, BorderLayout.CENTER);
 		
 		add(_gamePanel);
 	}
