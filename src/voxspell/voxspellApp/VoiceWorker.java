@@ -33,7 +33,7 @@ public class VoiceWorker extends SwingWorker<Void, Void>{
 		output.write(("(SayText \"" + _command + "\" )n").getBytes());
 		output.write(("(exit)n").getBytes());
 		output.flush();
-		process.destroy();
+		//process.destroy();
 		//System.out.println(_command);
 		//output.flush();
 		//process.destroyForcibly();
