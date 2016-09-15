@@ -115,7 +115,7 @@ public class TitleScreen extends JPanel {
 		_buttonPanel.add(_newQuiz);
 		_buttonPanel.add(_reviewMistakes);
 		_buttonPanel.add(_viewStats);
-		_buttonPanel.setPreferredSize(new Dimension(600, 127));
+		_buttonPanel.setPreferredSize(new Dimension(600, 130));
 		
 		_mainPanel.add(_titleScreenPanel, BorderLayout.NORTH);
 		_mainPanel.add(_buttonPanel, BorderLayout.CENTER);
