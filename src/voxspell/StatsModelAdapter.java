@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class StatsModelAdapter implements GameListener {
 	private StatsModel _adaptee;
-	private int _length, _incorrectCount;
+	private int _length, _incorrectCount, _totalWords;
 	private String _word;
 	private ArrayList<StatsModelAdapter> _listeners = new ArrayList<StatsModelAdapter>();
 	public StatsModelAdapter(StatsModel view, int length, int incorrectCount, String word) {
@@ -12,6 +12,7 @@ public class StatsModelAdapter implements GameListener {
 		_length = length;
 		_incorrectCount = incorrectCount;
 		_word = word;
+		_totalWords = 9;
 	}
 	public void setWord(GameEvent event, String word) {
 		switch (event.eventType()) {
@@ -41,8 +42,10 @@ public class StatsModelAdapter implements GameListener {
 		}
 	}
 	
-	public void setLength(int correct) {
-		_length = correct;
+	public void setNumber(int wordsCorrect, int wordsIncorrect, int totalWords) {
+		_length = wordsCorrect;
+		_incorrectCount = wordsIncorrect;
+		_totalWords = totalWords;
 	}
 	@Override
 	public int getLength() {

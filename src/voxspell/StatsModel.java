@@ -12,8 +12,9 @@ import javax.swing.JPanel;
 
 public class StatsModel extends JPanel {
 
-	private static final int BAR_HEIGHT = 23;
+	private static final int BAR_HEIGHT = 20;
 	private int _level, _wordsCorrect, _wordsIncorrect, _totalWords;
+	private Color _color;
 //	private JLabel _levelLabel, _scoreLabel;
 	
 	public StatsModel(int level) {
@@ -29,8 +30,10 @@ public class StatsModel extends JPanel {
 		repaint();
 	}
 	
-	public void setCorrect(int wordsCorrect) {
+	public void setNumber(int wordsCorrect, int wordsIncorrect, int totalWords) {
 		_wordsCorrect = wordsCorrect;
+		_wordsIncorrect = wordsIncorrect;
+		_totalWords = totalWords;
 	}
 	
 	public int getCorrect() {
@@ -43,20 +46,21 @@ public class StatsModel extends JPanel {
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		if (_wordsIncorrect >= 2) {
-			g.setColor(Color.RED);
+			_color = Color.RED;
 			_totalWords = 10;
 		} else if (_wordsIncorrect == 1) {
-			g.setColor(Color.YELLOW);
+			_color = Color.YELLOW;
 			_totalWords = 10;
 		} else {
-			g.setColor(Color.GREEN);
+			_color = Color.GREEN;
 		}
+		g.setColor(_color);
 		g.fillRect(0, 5, _wordsCorrect*30, BAR_HEIGHT);
 		Graphics2D g2 = (Graphics2D)g.create();
 		g2.setColor(Color.BLACK);		
 		g2.setFont(new Font("Verdana", Font.BOLD, 18));
 //		g2.drawString("100%", 270, 17);
-		g2.drawString(Integer.toString(100*_wordsCorrect/_totalWords)+"%", 280, 15);
+		g2.drawString(Integer.toString(100*_wordsCorrect/_totalWords)+"%", 280, 17);
 	}
 	
 }
