@@ -1,13 +1,10 @@
 package voxspell;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 public class StatsModel extends JPanel {
@@ -15,27 +12,21 @@ public class StatsModel extends JPanel {
 	private static final int BAR_HEIGHT = 20;
 	private int _level, _wordsCorrect, _wordsIncorrect, _totalWords;
 	private Color _color;
-//	private JLabel _levelLabel, _scoreLabel;
-	
+
 	public StatsModel(int level) {
 		_level = level;
 		_totalWords = 9;
 	}
-//	private void updateNumbers(int wordsCorrect, int wordsTotal) {
-//		_scoreLabel.setText(Integer.toString(_wordsCorrect)+" / " +Integer.toString(_wordsTotal));
-//	}
 	public void compute(int wordsCorrect, int wordsIncorrect) {
 		_wordsCorrect = wordsCorrect;
 		_wordsIncorrect = wordsIncorrect;
 		repaint();
 	}
-	
 	public void setNumber(int wordsCorrect, int wordsIncorrect, int totalWords) {
 		_wordsCorrect = wordsCorrect;
 		_wordsIncorrect = wordsIncorrect;
 		_totalWords = totalWords;
 	}
-	
 	public int getCorrect() {
 		return _wordsCorrect;
 	}
@@ -59,8 +50,6 @@ public class StatsModel extends JPanel {
 		Graphics2D g2 = (Graphics2D)g.create();
 		g2.setColor(Color.BLACK);		
 		g2.setFont(new Font("Verdana", Font.BOLD, 18));
-//		g2.drawString("100%", 270, 17);
 		g2.drawString(Integer.toString(100*_wordsCorrect/_totalWords)+"%", 280, 17);
 	}
-	
 }
