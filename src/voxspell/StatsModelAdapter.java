@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 public class StatsModelAdapter implements GameListener {
 	private StatsModel _adaptee;
-	private ReviewStatsModel _adaptee2;
 	private int _length, _incorrectCount, _totalWords;
 	private String _word;
 	private ArrayList<StatsModelAdapter> _listeners = new ArrayList<StatsModelAdapter>();
