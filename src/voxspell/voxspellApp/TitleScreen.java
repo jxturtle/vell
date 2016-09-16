@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -12,6 +13,7 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
@@ -23,10 +25,13 @@ public class TitleScreen extends JPanel {
 	private ImageIcon _welcome, _backImage;
 	private JButton _newQuiz, _reviewMistakes, _viewStats, _back;
 	private Font font = new Font("Verdana", Font.PLAIN, 20);
+	private ReviewConfig _reviewConfig;
+	private ArrayList<String> _words;
 	protected static JFrame frame;
 	public TitleScreen() {
 		buildGUI();
 		setUpListeners();
+		_reviewConfig = new ReviewConfig();
 	}
 	private void setUpListeners() {
 		_newQuiz.addActionListener(new ActionListener() {
@@ -53,15 +58,19 @@ public class TitleScreen extends JPanel {
 
 		_reviewMistakes.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				_mainPanel.setVisible(false);
-				_back.setVisible(true);
-				
-				GameGUI game = new GameGUI(0, frame);
-				frame.getContentPane().removeAll();
-//				_mainPanel.setVisible(false);
-				frame.getContentPane().add(game);
-				frame.revalidate();
-				frame.repaint();
+				_words = _reviewConfig.getWords();
+				int lines = _words.size();
+				if (lines == 0) {
+					JOptionPane.showMessageDialog(null, "There are no mistakes to review");
+				} else {
+					_mainPanel.setVisible(false);
+					_back.setVisible(true);
+					GameGUI game = new GameGUI(0, frame);
+					frame.getContentPane().removeAll();
+					frame.getContentPane().add(game);
+					frame.revalidate();
+					frame.repaint();
+				}
 			}
 		});
 		_viewStats.addActionListener(new ActionListener() {

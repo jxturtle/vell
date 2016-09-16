@@ -37,12 +37,12 @@ public class GameGUI extends JPanel {
 	private JTextArea _outputArea;
 	private JTextField _inputField;
 	private String _voiceSelected;
-	private int _level;
+	private int _level, _lines;
 	private JPanel[] _levelPanels, _levelLabelPanels;
 	private JLabel[] _levelLabels;
 	private StatsModel[] _statsModels;
 	private StatsModelAdapter[] _statsModelAdapters;
-//	private ReviewStatsModel _reviewStatsModel;
+	private StatsModel _reviewStatsModel;
 	private StatsModelAdapter _reviewStatsModelAdapter;
 	private GameLogic _game;
 	private ArrayList<String> _words;
@@ -55,11 +55,12 @@ public class GameGUI extends JPanel {
 		_level = level;
 		_config = new GameConfig();
 		_reviewConfig = new ReviewConfig();
+		_words = _reviewConfig.getWords();
+		_lines = _words.size();
 		buildGUI();
 		setUpRightPanel(_level);
 		VoiceEvent.makeDefaultVoice();
 		setUpListeners();
-
 	}
 	private void setUpListeners() {
 		_back.addActionListener(new ActionListener() {
@@ -112,31 +113,15 @@ public class GameGUI extends JPanel {
 	}
 	private void setUpNewLevelGame(int level) {	
 		if (level == 0) {
-			_words = _reviewConfig.getWords();
 			ArrayList<GameListener> _listeners = new ArrayList<GameListener>();
 			_listeners.add(_reviewStatsModelAdapter);
-			System.out.println(_listeners.get(0));
-			int lines = _words.size();
-			if (lines != 0) {
-				if (lines < 10) {
-					_game = new GameLogic(_level, lines, _outputArea, _inputField, _start, _back, _submit, _listeners);
-				} else {
-					_game = new GameLogic(_level, 10, _outputArea, _inputField, _start, _back, _submit, _listeners);
-				}
-				_outputArea.append("\n");
-				_outputArea.append("Starting a new Spelling Quiz Game...\n");
-				_outputArea.append("Please spell out the words.\n");
-				_outputArea.append("==============================\n");
-				_game.playGame(_words);
+			if (_lines < 10) {
+				_game = new GameLogic(_level, _lines, _outputArea, _inputField, _start, _back, _submit, _listeners);
 			} else {
-				_outputArea.append("You do not have any mistakes so far.");
-			}
+				_game = new GameLogic(_level, 10, _outputArea, _inputField, _start, _back, _submit, _listeners);
+			}		
 		} else {
 			_statsModels[_level-1].setNumber(0,0,9);
-			_outputArea.append("\n");
-			_outputArea.append("Starting a new Spelling Quiz Game...\n");
-			_outputArea.append("Please spell out the ten words.\n");
-			_outputArea.append("==============================\n");
 			if (_start.getText().equals("Begin the next level")) {
 				_level++;
 				_words = _config.getLevelWords(_level);
@@ -149,16 +134,21 @@ public class GameGUI extends JPanel {
 			_listeners.add(_statsModelAdapters[_level-1]);
 			_statsModels[_level-1].compute(0, 0);		
 			_game = new GameLogic(_level, 10, _outputArea, _inputField, _start, _back, _submit, _listeners);
-			_game.playGame(_words);
 		}
+		_outputArea.append("\n");
+		_outputArea.append("Starting a new Spelling Quiz Game...\n");
+		_outputArea.append("Please spell out the words.\n");
+		_outputArea.append("==============================\n");
+		_game.playGame(_words);
 	}
 	private void setUpRightPanel(int level) {
 		if (level == 0) {
-			System.out.println("wip");
-//			_reviewStatsModel = new ReviewStatsModel();
-//			_reviewStatsModelAdapter = new StatsModelAdapter(_reviewStatsModel, 0, 0, "");
-//			_rightPanel.add(_reviewStatsModel);
+			_reviewStatsModel = new StatsModel(0, _lines);
+			_reviewStatsModel.setPreferredSize(new Dimension(420,450));
+			_reviewStatsModelAdapter = new StatsModelAdapter(_reviewStatsModel, 0, 0, "");
+			_rightPanel.add(_reviewStatsModel);
 		} else {
+			_rightPanel.setLayout(new GridLayout(11,1));
 			_statsModels = new StatsModel[11];
 			_levelPanels = new JPanel[11];
 			_levelLabels = new JLabel[11];
@@ -173,7 +163,7 @@ public class GameGUI extends JPanel {
 				_levelLabelPanels[i].setPreferredSize(new Dimension(90, 50));
 				_levelLabelPanels[i].add(_levelLabels[i]);
 				_levelPanels[i].add(_levelLabelPanels[i], BorderLayout.WEST);
-				_statsModels[i] = new StatsModel(i+1);
+				_statsModels[i] = new StatsModel(i+1, 9);
 				_statsModelAdapters[i] = new StatsModelAdapter(_statsModels[i], 0, 0, "");
 				_levelPanels[i].add(_statsModels[i], BorderLayout.CENTER);
 				_rightPanel.add(_levelPanels[i]);
@@ -200,7 +190,6 @@ public class GameGUI extends JPanel {
 		_rightPanel.setPreferredSize(new Dimension(440, 500));
 
 		//Create main stats panel
-		_rightPanel.setLayout(new GridLayout(11,1));
 		_rightPanel.setBorder(BorderFactory.createTitledBorder("Game Statistics"));
 		
 		_leftTopPanel.setLayout(new BorderLayout());
