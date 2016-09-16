@@ -42,7 +42,7 @@ public class GameGUI extends JPanel {
 	private JLabel[] _levelLabels;
 	private StatsModel[] _statsModels;
 	private StatsModelAdapter[] _statsModelAdapters;
-	private ReviewStatsModel _reviewStatsModel;
+//	private ReviewStatsModel _reviewStatsModel;
 	private StatsModelAdapter _reviewStatsModelAdapter;
 	private GameLogic _game;
 	private ArrayList<String> _words;
@@ -154,9 +154,10 @@ public class GameGUI extends JPanel {
 	}
 	private void setUpRightPanel(int level) {
 		if (level == 0) {
-			_reviewStatsModel = new ReviewStatsModel();
-			_reviewStatsModelAdapter = new StatsModelAdapter(_reviewStatsModel, 0, 0, "");
-			_rightPanel.add(_reviewStatsModel);
+			System.out.println("wip");
+//			_reviewStatsModel = new ReviewStatsModel();
+//			_reviewStatsModelAdapter = new StatsModelAdapter(_reviewStatsModel, 0, 0, "");
+//			_rightPanel.add(_reviewStatsModel);
 		} else {
 			_statsModels = new StatsModel[11];
 			_levelPanels = new JPanel[11];
