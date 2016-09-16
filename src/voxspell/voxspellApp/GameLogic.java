@@ -28,16 +28,6 @@ public class GameLogic {
 	String _command;
 
 	private ArrayList<String> _words;
-	
-//	public GameLogic(int level, int wordCap, JTextArea outputArea, JTextField inputField, JButton start, JButton back, JButton submit) {
-//		_level = level;
-//		_wordCap = wordCap;
-//		_outputArea = outputArea;
-//		_inputField = inputField;
-//		_start = start;
-//		_back = back;
-//		_submit = submit;
-//	}
 	public GameLogic(int level, int wordCap, JTextArea outputArea, JTextField inputField, JButton start, JButton back, JButton submit, ArrayList<GameListener> listeners) {
 		_level = level;
 		_listeners = listeners;
@@ -107,21 +97,50 @@ public class GameLogic {
 							_back.setVisible(true);
 						}
 						else if ((_level > 0) && (_level < 11)) {
-							int test = JOptionPane.showConfirmDialog(null, "Would you like to move on to the next level?", "Level finished", JOptionPane.YES_NO_OPTION);
-							switch(test) {
+							int playVideo = JOptionPane.showConfirmDialog(null, "Play video reward?", "Level Complete!", JOptionPane.YES_NO_OPTION);
+							switch(playVideo) {
 							case JOptionPane.YES_OPTION:
-								_start.setText("Begin the next level");
-								_start.setVisible(true);
-								_back.setVisible(true);
+								VideoProcessor something = new VideoProcessor(_start, _back);
+								
+								//something.showVideo();
+								//VideoProcessor videoProcessor = new VideoProcessor();
+								
 								break;
 							case JOptionPane.NO_OPTION:
-								_start.setText("Repeat the same level");
-								_start.setVisible(true);
-								_back.setVisible(true);
-								break;
-							default:
-								break;
+								int test = JOptionPane.showConfirmDialog(null, "Would you like to move on to the next level?", "Level finished", JOptionPane.YES_NO_OPTION);
+								switch(test) {
+								case JOptionPane.YES_OPTION:
+									_start.setText("Begin the next level");
+									_start.setVisible(true);
+									_back.setVisible(true);
+									break;
+								case JOptionPane.NO_OPTION:
+									_start.setText("Repeat the same level");
+									_start.setVisible(true);
+									_back.setVisible(true);
+									break;
+								default:
+									break;
+								}
 							}
+							
+							
+							//Only do this after video has played
+//							int test = JOptionPane.showConfirmDialog(null, "Would you like to move on to the next level?", "Level finished", JOptionPane.YES_NO_OPTION);
+//							switch(test) {
+//							case JOptionPane.YES_OPTION:
+//								_start.setText("Begin the next level");
+//								_start.setVisible(true);
+//								_back.setVisible(true);
+//								break;
+//							case JOptionPane.NO_OPTION:
+//								_start.setText("Repeat the same level");
+//								_start.setVisible(true);
+//								_back.setVisible(true);
+//								break;
+//							default:
+//								break;
+//							}
 						} else {
 							int test = JOptionPane.showConfirmDialog(null, "Would you like to repeat this level?", "Level finished", JOptionPane.YES_NO_OPTION);
 							switch(test) {
