@@ -3,6 +3,7 @@ package voxspell.voxspellApp;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import voxspell.FilesManager;
 import voxspell.GameEvent;
 import voxspell.GameListener;
 
@@ -28,7 +29,15 @@ public class GameLogic {
 
 	private ArrayList<String> _words;
 	
-
+//	public GameLogic(int level, int wordCap, JTextArea outputArea, JTextField inputField, JButton start, JButton back, JButton submit) {
+//		_level = level;
+//		_wordCap = wordCap;
+//		_outputArea = outputArea;
+//		_inputField = inputField;
+//		_start = start;
+//		_back = back;
+//		_submit = submit;
+//	}
 	public GameLogic(int level, int wordCap, JTextArea outputArea, JTextField inputField, JButton start, JButton back, JButton submit, ArrayList<GameListener> listeners) {
 		_level = level;
 		_listeners = listeners;
@@ -58,6 +67,8 @@ public class GameLogic {
 							VoiceWorker worker = new VoiceWorker(0, _command);
 							worker.execute();
 							output.append("Correct. \n");
+							FilesManager fileManager = new FilesManager(randomWord, cnt);
+							fileManager.manageFiles();
 							fin = true;
 						} catch (Exception e1) {
 							e1.printStackTrace();
@@ -72,6 +83,8 @@ public class GameLogic {
 							} else {
 								fin = true;
 								_command = "Incorrect.";
+								FilesManager fileManager = new FilesManager(randomWord, cnt);
+								fileManager.manageFiles();
 								fire(GameEvent.makeIncorrectEvent());
 							}
 							VoiceWorker worker = new VoiceWorker(0, _command);
@@ -87,7 +100,13 @@ public class GameLogic {
 						GameLogic experimentalNewGame = new GameLogic(_level, _wordCap-1, _outputArea, _inputField, _start, _back, _submit, _listeners);
 						experimentalNewGame.playGame(_words);
 					} else if (fin && _wordCap == 1 || _listeners.get(0).getLength() >= 9) {
-						if (_level < 11) {
+						if (_level == 0) {
+							_outputArea.append("==============================\n");
+							_outputArea.append("Game has finished. \n");
+							_outputArea.append("==============================\n");
+							_back.setVisible(true);
+						}
+						else if ((_level > 0) && (_level < 11)) {
 							int test = JOptionPane.showConfirmDialog(null, "Would you like to move on to the next level?", "Level finished", JOptionPane.YES_NO_OPTION);
 							switch(test) {
 							case JOptionPane.YES_OPTION:
@@ -99,7 +118,6 @@ public class GameLogic {
 								_start.setText("Repeat the same level");
 								_start.setVisible(true);
 								_back.setVisible(true);
-
 								break;
 							default:
 								break;
@@ -111,14 +129,12 @@ public class GameLogic {
 								_start.setText("Repeat the same level");
 								_start.setVisible(true);
 								_back.setVisible(true);
-
 								break;
 							case JOptionPane.NO_OPTION:
 								_outputArea.append("==============================\n");
 								_outputArea.append("Game has finished. \n");
 								_outputArea.append("==============================\n");
 								_back.setVisible(true);
-
 								break;
 							default:
 								break;

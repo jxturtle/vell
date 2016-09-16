@@ -55,9 +55,13 @@ public class TitleScreen extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				_mainPanel.setVisible(false);
 				_back.setVisible(true);
-				ReviewMistakes review = new ReviewMistakes();
-				add(review);
-				review.setVisible(true);
+				
+				GameGUI game = new GameGUI(0, frame);
+				frame.getContentPane().removeAll();
+//				_mainPanel.setVisible(false);
+				frame.getContentPane().add(game);
+				frame.revalidate();
+				frame.repaint();
 			}
 		});
 		_viewStats.addActionListener(new ActionListener() {
@@ -111,7 +115,9 @@ public class TitleScreen extends JPanel {
 		_backPanel.add(_back);
 		_back.setPreferredSize(new Dimension(55,55));
 		_back.setVisible(false);
-		
+		_back.setOpaque(false);
+		_back.setContentAreaFilled(false);
+		_back.setBorderPainted(false);
 		_buttonPanel.add(_newQuiz);
 		_buttonPanel.add(_reviewMistakes);
 		_buttonPanel.add(_viewStats);

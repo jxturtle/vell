@@ -15,7 +15,7 @@ public class GameConfig {
 	private ArrayList<String> _wordsCopy;
 	//private HashMap<Integer, ArrayList<String>> _wordMap;
 	private HashMap<Integer, ArrayList<String>> _finalWordMap;
-	private int _key;
+	private int _key, _level;
 	
 //	private static GameConfig instance;
 //	public static GameConfig instance() {
@@ -30,6 +30,7 @@ public class GameConfig {
 			HashMap<Integer, ArrayList<String>> _wordMap = new HashMap<Integer, ArrayList<String>>();
 			ArrayList<String> _wordArray = new ArrayList<String>();
 			Scanner scanner = new Scanner(new File(FILENAME));
+			
 			while (scanner.hasNextLine()) {
 				
 				String token = scanner.nextLine();
