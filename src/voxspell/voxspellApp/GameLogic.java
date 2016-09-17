@@ -101,32 +101,12 @@ public class GameLogic {
 							GameLogic experimentalNewGame = new GameLogic(_level, _wordCap-1, _outputArea, _inputField, _start, _back, _submit, _listeners);
 							experimentalNewGame.playGame(_words);
 						} else if (_listeners.get(0).getLength() >= 9) {
-							int playVideo = JOptionPane.showConfirmDialog(null, "Play video reward?", "Level Complete!", JOptionPane.YES_NO_OPTION);
-							switch(playVideo) {
-							case JOptionPane.YES_OPTION:
-								_isVideoOn = true;
-								openOptionPaneWhenComplete(_level, _isVideoOn);
-								VideoProcessor video = new VideoProcessor();
-								break;
-							case JOptionPane.NO_OPTION:
-//								_isVideoOn = false;
-								openOptionPaneWhenComplete(_level, _isVideoOn);
-							}
+							openOptionPaneAskingVideo();
 						} else if (fin && _wordCap == 1) {
 							if (_listeners.get(0).getLength() < 9) {
-//								_isVideoOn = false;
 								openOptionPaneWhenComplete(_level, _isVideoOn);
 							} else {
-								int playVideo = JOptionPane.showConfirmDialog(null, "Play video reward?", "Level Complete!", JOptionPane.YES_NO_OPTION);
-								switch(playVideo) {
-								case JOptionPane.YES_OPTION:
-									_isVideoOn = true;
-									openOptionPaneWhenComplete(_level, _isVideoOn);
-									VideoProcessor video = new VideoProcessor();
-									break;
-								case JOptionPane.NO_OPTION:
-									openOptionPaneWhenComplete(_level, _isVideoOn);
-								}
+								openOptionPaneAskingVideo();
 							}
 						}
 					}
@@ -166,6 +146,18 @@ public class GameLogic {
 		for (GameListener listener : _listeners) {
 			listener.setWord(e, word);
 		}
+	}
+	private void openOptionPaneAskingVideo() {
+		int playVideo = JOptionPane.showConfirmDialog(null, "Play video reward?", "Level Complete!", JOptionPane.YES_NO_OPTION);
+		switch(playVideo) {
+		case JOptionPane.YES_OPTION:
+			_isVideoOn = true;
+			openOptionPaneWhenComplete(_level, _isVideoOn);
+			VideoProcessor video = new VideoProcessor();
+			break;
+		case JOptionPane.NO_OPTION:
+			openOptionPaneWhenComplete(_level, _isVideoOn);
+		}		
 	}
 	private void openOptionPaneWhenComplete(int level, boolean isVideoOn) {
 		String message, yesMessage;
