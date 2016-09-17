@@ -33,6 +33,7 @@ public class VideoProcessor {
         _videoFrame = new JFrame("Video Reward");
         _videoFrame.setSize(800, 600);
         _videoFrame.setVisible(true);
+		_videoFrame.setLocationRelativeTo(null);
         _mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
         _video = _mediaPlayerComponent.getMediaPlayer();
         buildGUI();
@@ -59,7 +60,7 @@ public class VideoProcessor {
         _mute = new JButton(_muteImage);
 		_mute.setPreferredSize(new Dimension(50,50));
         _extra = new JButton("Watch the special clip");
-        _extra.setPreferredSize(new Dimension(200, 50));
+        _extra.setPreferredSize(new Dimension(225, 50));
 
         _leftPanel = new JPanel();
         _leftPanel.add(_play);
