@@ -9,7 +9,7 @@ import java.io.IOException;
 
 
 public class FilesManager {
-	public static final String WORDSASSESSED = "wordsUsed.txt";
+	public static final String WORDSASSESSED = ".wordsUsed.txt";
 	private String _word;
 	private int _token;
 	private String _fileName;
@@ -29,14 +29,14 @@ public class FilesManager {
 	
 	private void setUpFileNames() {
 		if (_token == 3) {
-			_fileName = "mastered.txt";
-			_statsFileName = "masteredStats.txt";
+			_fileName = ".mastered.txt";
+			_statsFileName = ".masteredStats.txt";
 		} else if (_token == 2) {
-			_fileName = "failed.txt";
-			_statsFileName = "failedStats.txt";
+			_fileName = ".failed.txt";
+			_statsFileName = ".failedStats.txt";
 		} else if (_token == 4) {
-			_fileName = "mastered.txt";
-			_statsFileName = "faultedStats.txt";
+			_fileName = ".mastered.txt";
+			_statsFileName = ".faultedStats.txt";
 		}
 		//The difference between writeToStatsFile and writeToFile is that writeToFile checks if
 		//the word to be added already exists in the file (Word will be added to the
@@ -50,8 +50,8 @@ public class FilesManager {
 		//correct word from failed and faulted. 
 		if (_token == 3 || _token == 4) {
 			try {
-				File failedFile = new File("failed.txt");
-				File faultedFile = new File("faulted.txt");
+				File failedFile = new File(".failed.txt");
+				File faultedFile = new File(".faulted.txt");
 				if (failedFile.exists()) {
 					remakeFileWithoutWord(failedFile);
 				}
@@ -66,7 +66,7 @@ public class FilesManager {
 		}
 	}
 		private void remakeFileWithoutWord(File inputFile) throws IOException {
-			File tempFile = new File("tempWordList.txt");
+			File tempFile = new File(".tempWordList.txt");
 			
 			BufferedReader reader = new BufferedReader(new FileReader(inputFile));
 			BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
