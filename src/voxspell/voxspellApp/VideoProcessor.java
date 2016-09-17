@@ -23,13 +23,9 @@ import com.sun.jna.Native;
 import com.sun.jna.NativeLibrary;
 
 public class VideoProcessor {
-	private JButton _start;
-	private JButton _back;
     private final EmbeddedMediaPlayerComponent mediaPlayerComponent;
 
-    public VideoProcessor(JButton start, JButton back) {
-    	_start = start;
-    	_back = back;
+    public VideoProcessor() {
         final JFrame frame = new JFrame("Video Reward");
 
         mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
@@ -58,21 +54,6 @@ public class VideoProcessor {
 		frame.addWindowListener(new WindowAdapter() {
 		public void windowClosing(WindowEvent e) {
 			frame.dispose();
-			int test = JOptionPane.showConfirmDialog(null, "Would you like to move on to the next level?", "Level finished", JOptionPane.YES_NO_OPTION);
-			switch(test) {
-			case JOptionPane.YES_OPTION:
-				_start.setText("Begin the next level");
-				_start.setVisible(true);
-				_back.setVisible(true);
-				break;
-			case JOptionPane.NO_OPTION:
-				_start.setText("Repeat the same level");
-				_start.setVisible(true);
-				_back.setVisible(true);
-				break;
-			default:
-				break;
-			}
 		}
 	});
 

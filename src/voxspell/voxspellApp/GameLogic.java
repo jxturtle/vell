@@ -22,7 +22,7 @@ public class GameLogic {
 	private JTextField _inputField;
 	private JButton _start, _submit, _back;
 	private String userIn;
-	private boolean fin, isLevelStillOn = true;
+	private boolean fin, _isVideoOn = false;
 	private int cnt;
 	private int _level;
 	String _command;
@@ -72,7 +72,7 @@ public class GameLogic {
 							} else {
 								fin = true;
 								_command = "Incorrect.";
-								output.append("Incorrect.");
+								output.append("Incorrect.\n");
 								FilesManager fileManager = new FilesManager(randomWord, cnt);
 								fileManager.manageFiles();
 								fire(GameEvent.makeIncorrectEvent());
@@ -90,15 +90,13 @@ public class GameLogic {
 						if (fin && _wordCap > 1) {
 							GameLogic experimentalNewGame = new GameLogic(_level, _wordCap-1, _outputArea, _inputField, _start, _back, _submit, _listeners);
 							experimentalNewGame.playGame(_words);
-
 						} else if (fin && _wordCap == 1){
 							_outputArea.append("==============================\n");
 							_outputArea.append("Game has finished. \n");
 							_outputArea.append("==============================\n");
 							_back.setVisible(true);
-
 						}
-					} else if ((_level > 0) && (_level < 11)) {
+					} else {
 						if (fin && _wordCap > 1 && _listeners.get(0).getLength() < 9) {
 							GameLogic experimentalNewGame = new GameLogic(_level, _wordCap-1, _outputArea, _inputField, _start, _back, _submit, _listeners);
 							experimentalNewGame.playGame(_words);
@@ -106,27 +104,31 @@ public class GameLogic {
 							int playVideo = JOptionPane.showConfirmDialog(null, "Play video reward?", "Level Complete!", JOptionPane.YES_NO_OPTION);
 							switch(playVideo) {
 							case JOptionPane.YES_OPTION:
-								VideoProcessor video = new VideoProcessor(_start, _back);
+								_isVideoOn = true;
+								openOptionPaneWhenComplete(_level, _isVideoOn);
+								VideoProcessor video = new VideoProcessor();
 								break;
 							case JOptionPane.NO_OPTION:
-								openOptionPaneWhenComplete(_level);
+//								_isVideoOn = false;
+								openOptionPaneWhenComplete(_level, _isVideoOn);
 							}
 						} else if (fin && _wordCap == 1) {
 							if (_listeners.get(0).getLength() < 9) {
-								openOptionPaneWhenComplete(_level);
+//								_isVideoOn = false;
+								openOptionPaneWhenComplete(_level, _isVideoOn);
 							} else {
 								int playVideo = JOptionPane.showConfirmDialog(null, "Play video reward?", "Level Complete!", JOptionPane.YES_NO_OPTION);
 								switch(playVideo) {
 								case JOptionPane.YES_OPTION:
-									VideoProcessor video = new VideoProcessor(_start, _back);
+									_isVideoOn = true;
+									openOptionPaneWhenComplete(_level, _isVideoOn);
+									VideoProcessor video = new VideoProcessor();
 									break;
 								case JOptionPane.NO_OPTION:
-									openOptionPaneWhenComplete(_level);
+									openOptionPaneWhenComplete(_level, _isVideoOn);
 								}
 							}
 						}
-					} else {
-						openOptionPaneWhenComplete(_level);
 					}
 				}
 			}
@@ -165,40 +167,43 @@ public class GameLogic {
 			listener.setWord(e, word);
 		}
 	}
-	private void openOptionPaneWhenComplete(int level) {
+	private void openOptionPaneWhenComplete(int level, boolean isVideoOn) {
+		String message, yesMessage;
 		if (level == 11) {
-			int test = JOptionPane.showConfirmDialog(null, "Would you like to repeat this level?", "Level Complete!", JOptionPane.YES_NO_OPTION);
-			switch(test) {
-			case JOptionPane.YES_OPTION:
-				_start.setText("Repeat the same level");
-				_start.setVisible(true);
-				_back.setVisible(true);
-				break;
-			case JOptionPane.NO_OPTION:
+			if (isVideoOn) {
+				message = "After watching video, would you like to repeat this level?";
+			} else {
+				message = "Would you like to repeat this level?";				
+			}
+			yesMessage = "Repeat the same level";
+		} else {
+			if (isVideoOn) {
+				message = "After watching video, would you like to move to the next level?";
+			} else {
+				message = "Would you like to move to the next level?";				
+			}
+			yesMessage = "Begin the next level";
+		}
+		int test = JOptionPane.showConfirmDialog(null, message, "Level Complete!", JOptionPane.YES_NO_OPTION);
+		switch(test) {
+		case JOptionPane.YES_OPTION:
+			_start.setText(yesMessage);
+			_start.setVisible(true);
+			_back.setVisible(true);
+			break;
+		case JOptionPane.NO_OPTION:
+			if (level == 11) {
 				_outputArea.append("==============================\n");
 				_outputArea.append("Game has finished. \n");
 				_outputArea.append("==============================\n");
-				_back.setVisible(true);
-				break;
-			default:
-				break;
-			}			
-		} else {
-			int test = JOptionPane.showConfirmDialog(null, "Would you like to move on to the next level?", "Level Complete!", JOptionPane.YES_NO_OPTION);
-			switch(test) {
-			case JOptionPane.YES_OPTION:
-				_start.setText("Begin the next level");
-				_start.setVisible(true);
-				_back.setVisible(true);
-				break;
-			case JOptionPane.NO_OPTION:
+			} else {
 				_start.setText("Repeat the same level");
 				_start.setVisible(true);
-				_back.setVisible(true);
-				break;
-			default:
-				break;
 			}
+			_back.setVisible(true);
+			break;
+		default:
+			break;			
 		}
 	}
 }
