@@ -12,8 +12,7 @@ public class StatsModel extends JPanel {
 	private static final int BAR_HEIGHT = 20;
 	private int _level, _wordsCorrect, _wordsIncorrect, _totalWords;
 	private Color _color;
-	public StatsModel() {
-	}
+
 	public StatsModel(int level, int totalWords) {
 		_level = level;
 		_totalWords = totalWords;
@@ -38,8 +37,11 @@ public class StatsModel extends JPanel {
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		if (_level == 0) {
+			if (_totalWords > 10) {
+				_totalWords = 10;
+			}
 			g.setFont(new Font("Verdana", Font.BOLD, 50));
-			g.drawString(Integer.toString(100*_wordsCorrect/_totalWords)+"%", 180,250);
+			g.drawString(Integer.toString(100*_wordsCorrect/_totalWords)+"%", 170,250);
 		} else {
 			if (_wordsIncorrect >= 2) {
 				_color = Color.RED;
