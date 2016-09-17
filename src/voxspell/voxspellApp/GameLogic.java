@@ -26,8 +26,8 @@ public class GameLogic {
 	private int cnt;
 	private int _level;
 	String _command;
-
 	private ArrayList<String> _words;
+
 	public GameLogic(int level, int wordCap, JTextArea outputArea, JTextField inputField, JButton start, JButton back, JButton submit, ArrayList<GameListener> listeners) {
 		_level = level;
 		_listeners = listeners;

@@ -1,149 +1,132 @@
-
 package voxspell.voxspellApp;
 
-
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 
-import uk.co.caprica.vlcj.binding.LibVlc;
 import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
+import uk.co.caprica.vlcj.player.MediaPlayer;
+import uk.co.caprica.vlcj.player.MediaPlayerEventAdapter;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
-import uk.co.caprica.vlcj.runtime.RuntimeUtil;
-
-import com.sun.jna.Native;
-import com.sun.jna.NativeLibrary;
 
 public class VideoProcessor {
-    private final EmbeddedMediaPlayerComponent mediaPlayerComponent;
-
+	private String _fileName = "big_buck_bunny_1_minute.avi";
+	private EmbeddedMediaPlayerComponent _mediaPlayerComponent;
+	private EmbeddedMediaPlayer _video;
+    private JFrame _videoFrame; 
+	private JPanel _mainPanel, _buttonPanel, _leftPanel, _rightPanel;
+    private JButton _mute, _play, _stop, _extra;
+    private ImageIcon _muteImage, _unmuteImage, _playImage, _stopImage, _pauseImage;
     public VideoProcessor() {
-        final JFrame frame = new JFrame("Video Reward");
+    	createAndShowVideo();
+    	setUpListeners();
+    }
+    private void createAndShowVideo() {
+        _videoFrame = new JFrame("Video Reward");
+        _videoFrame.setSize(800, 600);
+        _videoFrame.setVisible(true);
+        _mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
+        _video = _mediaPlayerComponent.getMediaPlayer();
+        buildGUI();
+        _videoFrame.setContentPane(_mainPanel);
+        _video.playMedia(_fileName);
+    }
+    private void buildGUI() {
+        _mainPanel = new JPanel(new BorderLayout());
+        _buttonPanel = new JPanel();
+        _buttonPanel.setLayout(new BorderLayout());
+        _buttonPanel.setPreferredSize(new Dimension(800,60));
+        _mainPanel.add(_mediaPlayerComponent, BorderLayout.CENTER);
+        _mainPanel.add(_buttonPanel, BorderLayout.SOUTH);
+    	_muteImage = new ImageIcon("mute.png");
+    	_playImage = new ImageIcon("play.png");
+    	_stopImage = new ImageIcon("stop.png");
+    	_pauseImage = new ImageIcon("pause.png");
+    	_unmuteImage = new ImageIcon("unmute.png");
 
-        mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
+		_play = new JButton(_pauseImage);
+		_play.setPreferredSize(new Dimension(50,50));
+        _stop = new JButton(_stopImage);
+		_stop.setPreferredSize(new Dimension(50,50));
+        _mute = new JButton(_muteImage);
+		_mute.setPreferredSize(new Dimension(50,50));
+        _extra = new JButton("Watch the special clip");
+        _extra.setPreferredSize(new Dimension(200, 50));
 
-        final EmbeddedMediaPlayer video = mediaPlayerComponent.getMediaPlayer();
-        
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.add(mediaPlayerComponent, BorderLayout.CENTER);
-        
-        frame.setContentPane(panel);
+        _leftPanel = new JPanel();
+        _leftPanel.add(_play);
+        _leftPanel.add(_stop);
+        _leftPanel.add(_mute);
 
-        JButton btnMute = new JButton("Shh....");
-        panel.add(btnMute, BorderLayout.NORTH);
-        btnMute.addActionListener(new ActionListener() {
-			@Override
+        _rightPanel = new JPanel();
+        _rightPanel.add(_extra);
+        _buttonPanel.add(_leftPanel, BorderLayout.WEST);
+        _buttonPanel.add(_rightPanel, BorderLayout.EAST);
+    }
+    private void setUpListeners() {
+        _videoFrame.addWindowListener(new WindowAdapter() {
+        	public void windowClosing(WindowEvent e) {
+        		_video.stop();
+        		_videoFrame.dispose();
+        	}
+        });
+        _video.addMediaPlayerEventListener(new MediaPlayerEventAdapter() {
+			public void playing(MediaPlayer arg0) {
+				_play.setIcon(_pauseImage);
+			}
+        	public void finished(MediaPlayer arg0) {
+				_play.setIcon(_playImage);
+			}
+        	public void stopped(MediaPlayer arg0) {
+        		_play.setIcon(_playImage);
+        	}
+        	public void paused(MediaPlayer arg0) {
+        		_play.setIcon(_playImage);
+        	}
+        });
+        _play.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		if (_play.getIcon().equals(_pauseImage)) {
+        			_video.pause();
+        		} else {
+        			_video.play();
+        		}
+        	}
+        });
+        _stop.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				video.mute();
+				_video.stop();
 			}
 		});
-        
-        frame.setLocation(100, 100);
-        frame.setSize(1050, 600);
-        //frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setVisible(true);
-        
-		frame.addWindowListener(new WindowAdapter() {
-		public void windowClosing(WindowEvent e) {
-			frame.dispose();
-		}
-	});
-
-        String filename = "bird_hey.avi";
-        video.playMedia(filename);
+        _extra.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (_extra.getText().equals("Watch the special clip")) {
+					_extra.setText("Watch the original video");
+					_video.playMedia("bird_hey.avi");
+				} else {
+					_extra.setText("Watch the special clip");
+					_video.playMedia(_fileName);
+				}
+			}
+		});
+        _mute.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (_mute.getIcon().equals(_muteImage)) {
+					_mute.setIcon(_unmuteImage);
+				} else {
+					_mute.setIcon(_muteImage);
+				}
+				_video.mute();
+			}
+		});
+    	
     }
 }
-
-
-
-
-//package voxspell.voxspellApp;
-//
-//import uk.co.caprica.vlcj.binding.LibVlc;
-//import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
-//import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
-//import uk.co.caprica.vlcj.runtime.RuntimeUtil;
-//
-//import java.awt.BorderLayout;
-//import java.awt.event.WindowAdapter;
-//import java.awt.event.WindowEvent;
-//
-//import javax.swing.JButton;
-//import javax.swing.JFrame;
-//import javax.swing.JOptionPane;
-//import javax.swing.JPanel;
-//import javax.swing.SwingUtilities;
-//
-//import com.sun.jna.Native;
-//import com.sun.jna.NativeLibrary;
-//
-//public class VideoProcessor {
-//	private final EmbeddedMediaPlayerComponent _mediaPlayerComponent;
-//	private JButton _start, _back;
-//	private JFrame _frame;
-//	private JPanel _panel;
-//	private JPanel _videoPanel;
-//	public VideoProcessor(JButton start, JButton back) {
-//		_start = start;
-//		_back = back;
-//		final JFrame _frame = new JFrame("Video Reward");
-//		_panel = new JPanel();
-//		_mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
-//		
-//		JPanel panel = new JPanel(new BorderLayout());
-//		panel.add(_mediaPlayerComponent, BorderLayout.CENTER);
-//		_frame.setContentPane(panel);
-//		final EmbeddedMediaPlayer video = _mediaPlayerComponent.getMediaPlayer();
-//		
-//		_frame.add(_panel);
-//		_frame.setContentPane(_mediaPlayerComponent);
-////		_frame.setLocation(100, 100);
-//	    _frame.setSize(800, 600);
-//	    //_frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//	    _frame.setVisible(true);
-//		_frame.addWindowListener(new WindowAdapter() {
-//			public void windowClosing(WindowEvent e) {
-//				_frame.dispose();
-//				int test = JOptionPane.showConfirmDialog(null, "Would you like to move on to the next level?", "Level finished", JOptionPane.YES_NO_OPTION);
-//				switch(test) {
-//				case JOptionPane.YES_OPTION:
-//					_start.setText("Begin the next level");
-//					_start.setVisible(true);
-//					_back.setVisible(true);
-//					break;
-//				case JOptionPane.NO_OPTION:
-//					_start.setText("Repeat the same level");
-//					_start.setVisible(true);
-//					_back.setVisible(true);
-//					break;
-//				default:
-//					break;
-//				}
-//			}
-//		});
-//        String filename = "bird_hey.avi";
-//        video.playMedia(filename);
-//	}
-//    public void showVideo() {
-//        
-//        NativeLibrary.addSearchPath(
-//            RuntimeUtil.getLibVlcLibraryName(), "/Applications/vlc-2.0.0/VLC.app/Contents/MacOS/lib"
-//        );
-//        Native.loadLibrary(RuntimeUtil.getLibVlcLibraryName(), LibVlc.class);
-//        
-//        SwingUtilities.invokeLater(new Runnable() {
-//            @Override
-//            public void run() {
-//                new VideoProcessor();
-//            }
-//        });
-//    }
-//}
