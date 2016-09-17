@@ -40,8 +40,15 @@ public class StatsModel extends JPanel {
 			if (_totalWords > 10) {
 				_totalWords = 10;
 			}
-			g.setFont(new Font("Verdana", Font.BOLD, 50));
-			g.drawString(Integer.toString(100*_wordsCorrect/_totalWords)+"%", 170,250);
+			int wordNumber = _wordsCorrect + _wordsIncorrect + 1;
+			if (wordNumber > _totalWords) {
+				wordNumber = _totalWords;
+			}
+			g.setFont(new Font("Verdana", Font.BOLD, 20));
+			g.drawString("Word " + Integer.toString(wordNumber) + " of " + Integer.toString(_totalWords), 140,100);
+			Graphics2D g2 = (Graphics2D)g.create();
+			g2.setFont(new Font("Verdana", Font.BOLD, 50));
+			g2.drawString(Integer.toString(100*_wordsCorrect/_totalWords)+"%", 170,250);
 		} else {
 			if (_wordsIncorrect >= 2) {
 				_color = Color.RED;
