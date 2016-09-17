@@ -22,7 +22,7 @@ public class GameLogic {
 	private JTextField _inputField;
 	private JButton _start, _submit, _back;
 	private String userIn;
-	private boolean fin;
+	private boolean fin, isLevelStillOn = true;
 	private int cnt;
 	private int _level;
 	String _command;
@@ -47,7 +47,6 @@ public class GameLogic {
 					String userInput = input.getText();
 					userIn = userInput;
 					input.setText("");
-//					input.setEnabled(false);
 					output.append(userIn + "\n");
 					if (randomWord.equalsIgnoreCase(userInput)) {
 						cnt += 3;
@@ -73,6 +72,7 @@ public class GameLogic {
 							} else {
 								fin = true;
 								_command = "Incorrect.";
+								output.append("Incorrect.");
 								FilesManager fileManager = new FilesManager(randomWord, cnt);
 								fileManager.manageFiles();
 								fire(GameEvent.makeIncorrectEvent());
@@ -86,90 +86,58 @@ public class GameLogic {
 					//2 is for straight up incorrect
 					//3 is for correct
 					//4 is for faulted
-					if (fin && _wordCap > 1 && _listeners.get(0).getLength() < 9) {
-						GameLogic experimentalNewGame = new GameLogic(_level, _wordCap-1, _outputArea, _inputField, _start, _back, _submit, _listeners);
-						experimentalNewGame.playGame(_words);
-					} else if (fin && _wordCap == 1 || _listeners.get(0).getLength() >= 9) {
-						if (_level == 0) {
+					if (_level == 0) {
+						if (fin && _wordCap > 1) {
+							GameLogic experimentalNewGame = new GameLogic(_level, _wordCap-1, _outputArea, _inputField, _start, _back, _submit, _listeners);
+							experimentalNewGame.playGame(_words);
+
+						} else if (fin && _wordCap == 1){
 							_outputArea.append("==============================\n");
 							_outputArea.append("Game has finished. \n");
 							_outputArea.append("==============================\n");
 							_back.setVisible(true);
+
 						}
-						else if ((_level > 0) && (_level < 11)) {
+					} else if ((_level > 0) && (_level < 11)) {
+						if (fin && _wordCap > 1 && _listeners.get(0).getLength() < 9) {
+							GameLogic experimentalNewGame = new GameLogic(_level, _wordCap-1, _outputArea, _inputField, _start, _back, _submit, _listeners);
+							experimentalNewGame.playGame(_words);
+						} else if (_listeners.get(0).getLength() >= 9) {
 							int playVideo = JOptionPane.showConfirmDialog(null, "Play video reward?", "Level Complete!", JOptionPane.YES_NO_OPTION);
 							switch(playVideo) {
 							case JOptionPane.YES_OPTION:
-								VideoProcessor something = new VideoProcessor(_start, _back);
-								
-								//something.showVideo();
-								//VideoProcessor videoProcessor = new VideoProcessor();
-								
+								VideoProcessor video = new VideoProcessor(_start, _back);
 								break;
 							case JOptionPane.NO_OPTION:
-								int test = JOptionPane.showConfirmDialog(null, "Would you like to move on to the next level?", "Level finished", JOptionPane.YES_NO_OPTION);
-								switch(test) {
+								openOptionPaneWhenComplete(_level);
+							}
+						} else if (fin && _wordCap == 1) {
+							if (_listeners.get(0).getLength() < 9) {
+								openOptionPaneWhenComplete(_level);
+							} else {
+								int playVideo = JOptionPane.showConfirmDialog(null, "Play video reward?", "Level Complete!", JOptionPane.YES_NO_OPTION);
+								switch(playVideo) {
 								case JOptionPane.YES_OPTION:
-									_start.setText("Begin the next level");
-									_start.setVisible(true);
-									_back.setVisible(true);
+									VideoProcessor video = new VideoProcessor(_start, _back);
 									break;
 								case JOptionPane.NO_OPTION:
-									_start.setText("Repeat the same level");
-									_start.setVisible(true);
-									_back.setVisible(true);
-									break;
-								default:
-									break;
+									openOptionPaneWhenComplete(_level);
 								}
 							}
-							
-							
-							//Only do this after video has played
-//							int test = JOptionPane.showConfirmDialog(null, "Would you like to move on to the next level?", "Level finished", JOptionPane.YES_NO_OPTION);
-//							switch(test) {
-//							case JOptionPane.YES_OPTION:
-//								_start.setText("Begin the next level");
-//								_start.setVisible(true);
-//								_back.setVisible(true);
-//								break;
-//							case JOptionPane.NO_OPTION:
-//								_start.setText("Repeat the same level");
-//								_start.setVisible(true);
-//								_back.setVisible(true);
-//								break;
-//							default:
-//								break;
-//							}
-						} else {
-							int test = JOptionPane.showConfirmDialog(null, "Would you like to repeat this level?", "Level finished", JOptionPane.YES_NO_OPTION);
-							switch(test) {
-							case JOptionPane.YES_OPTION:
-								_start.setText("Repeat the same level");
-								_start.setVisible(true);
-								_back.setVisible(true);
-								break;
-							case JOptionPane.NO_OPTION:
-								_outputArea.append("==============================\n");
-								_outputArea.append("Game has finished. \n");
-								_outputArea.append("==============================\n");
-								_back.setVisible(true);
-								break;
-							default:
-								break;
-							}
 						}
+					} else {
+						openOptionPaneWhenComplete(_level);
 					}
 				}
 			}
 		});
 	}
+	
 	public void playGame(ArrayList<String> words) {
 		_words = words;
 		String randomWord = getRandomWord(_words);
 		System.out.println(randomWord);
 		_outputArea.append("Enter your selection: ");
-//		_inputField.setEnabled(false);
 		getUserInput(randomWord, _inputField, _outputArea, _submit);
 		try {			
 			_command = "Please spell: ....... " + randomWord;
@@ -181,20 +149,56 @@ public class GameLogic {
 		fire(GameEvent.makeFestivalEvent(), randomWord);
 	}
 	
-	public String getRandomWord(ArrayList<String> words) {
+	private String getRandomWord(ArrayList<String> words) {
 		Collections.shuffle(words);
 		String pickWord = words.get(0);
 		words.remove(pickWord);
 		return pickWord;
 	}
-	public void fire(GameEvent e) {
+	private void fire(GameEvent e) {
 		for (GameListener listener : _listeners) {
 			listener.updateProgressBar(e);
 		}
 	}
-	public void fire(GameEvent e, String word) {
+	private void fire(GameEvent e, String word) {
 		for (GameListener listener : _listeners) {
 			listener.setWord(e, word);
+		}
+	}
+	private void openOptionPaneWhenComplete(int level) {
+		if (level == 11) {
+			int test = JOptionPane.showConfirmDialog(null, "Would you like to repeat this level?", "Level Complete!", JOptionPane.YES_NO_OPTION);
+			switch(test) {
+			case JOptionPane.YES_OPTION:
+				_start.setText("Repeat the same level");
+				_start.setVisible(true);
+				_back.setVisible(true);
+				break;
+			case JOptionPane.NO_OPTION:
+				_outputArea.append("==============================\n");
+				_outputArea.append("Game has finished. \n");
+				_outputArea.append("==============================\n");
+				_back.setVisible(true);
+				break;
+			default:
+				break;
+			}			
+		} else {
+			int test = JOptionPane.showConfirmDialog(null, "Would you like to move on to the next level?", "Level Complete!", JOptionPane.YES_NO_OPTION);
+			switch(test) {
+			case JOptionPane.YES_OPTION:
+				_start.setText("Begin the next level");
+				_start.setVisible(true);
+				_back.setVisible(true);
+				break;
+			case JOptionPane.NO_OPTION:
+				_start.setText("Repeat the same level");
+				_start.setVisible(true);
+				_back.setVisible(true);
+				break;
+			default:
+				break;
+			}
 		}
 	}
 }
