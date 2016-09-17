@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class ReviewConfig {
-	private static final String FILENAME = ".failed.txt";
+	private static final String FILENAME = ".failed";
 	private ArrayList<String> _wordArray;
 	private int _lines;
 	public ReviewConfig() {

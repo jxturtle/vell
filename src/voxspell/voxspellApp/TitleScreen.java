@@ -32,6 +32,7 @@ public class TitleScreen extends JPanel {
 		buildGUI();
 		setUpListeners();
 		_reviewConfig = new ReviewConfig();
+//		VideoProcessor video = new VideoProcessor();
 	}
 	private void setUpListeners() {
 		_newQuiz.addActionListener(new ActionListener() {
