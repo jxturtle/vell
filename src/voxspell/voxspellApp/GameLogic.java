@@ -100,14 +100,10 @@ public class GameLogic {
 						if (fin && _wordCap > 1 && _listeners.get(0).getLength() < 9) {
 							GameLogic experimentalNewGame = new GameLogic(_level, _wordCap-1, _outputArea, _inputField, _start, _back, _submit, _listeners);
 							experimentalNewGame.playGame(_words);
+						} else if (fin && _wordCap == 1 && _listeners.get(0).getLength() < 9) {
+							openOptionPaneWhenComplete(_level, _isVideoOn);
 						} else if (_listeners.get(0).getLength() >= 9) {
 							openOptionPaneAskingVideo();
-						} else if (fin && _wordCap == 1) {
-							if (_listeners.get(0).getLength() < 9) {
-								openOptionPaneWhenComplete(_level, _isVideoOn);
-							} else {
-								openOptionPaneAskingVideo();
-							}
 						}
 					}
 				}
