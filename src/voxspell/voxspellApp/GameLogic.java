@@ -56,7 +56,7 @@ public class GameLogic {
 							VoiceWorker worker = new VoiceWorker(0, _command);
 							worker.execute();
 							output.append("Correct. \n");
-							FilesManager fileManager = new FilesManager(randomWord, cnt);
+							FilesManager fileManager = new FilesManager(randomWord, _level, cnt);
 							fileManager.manageFiles();
 							fin = true;
 						} catch (Exception e1) {
@@ -73,7 +73,7 @@ public class GameLogic {
 								fin = true;
 								_command = "Incorrect.";
 								output.append("Incorrect.\n");
-								FilesManager fileManager = new FilesManager(randomWord, cnt);
+								FilesManager fileManager = new FilesManager(randomWord, _level, cnt);
 								fileManager.manageFiles();
 								fire(GameEvent.makeIncorrectEvent());
 							}

@@ -19,7 +19,6 @@ public class VoiceWorker extends SwingWorker<Void, Void>{
 		_sleep = sleep;
 		_command = command;
 	}
-	//output.write("(name_of_voice)n".getBytes());
 	@Override
 	protected Void doInBackground() throws Exception {
 		_voiceType = VoiceEvent.getVoiceType();
@@ -29,22 +28,9 @@ public class VoiceWorker extends SwingWorker<Void, Void>{
 		output = process.getOutputStream();
 		
 		output.write(("(" + _voiceType + ")n").getBytes());
-		//output.flush();
 		output.write(("(SayText \"" + _command + "\" )n").getBytes());
 		output.write(("(exit)n").getBytes());
 		output.flush();
-		//process.destroy();
-		//System.out.println(_command);
-		//output.flush();
-		//process.destroyForcibly();
-		//process.waitFor();
-		//System.out.println("SayText Hello -o | festival --tts");
-		//rt.exec("SayText Hello -o");
-		//rt.exec("SayText" + _command + ""
-//		ProcessBuilder pb = new ProcessBuilder("bash", "-c", _command);
-//		Process process = pb.start();
-//		process.waitFor();
-//		process.destroy();
 		return null;
 	}	
 	

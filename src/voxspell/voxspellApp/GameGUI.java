@@ -19,6 +19,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
@@ -65,20 +66,26 @@ public class GameGUI extends JPanel {
 	private void setUpListeners() {
 		_back.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				_frame.getContentPane().removeAll();
-//				_gamePanel.setVisible(false);
-				
-				TitleScreen newTitle = new TitleScreen();
-				JPanel title = newTitle.getMainPanel();
-				_frame.getContentPane().add(title);
-				_frame.revalidate();
-				_frame.repaint();
+				int backToMain = JOptionPane.showConfirmDialog(null, "<html>Are you sure you want to leave this game session?<br><br>"
+						+ "Your game statistics will be saved but you will lose your progress for the current game session if you leave now.<br><br>Press OK to continue, or Cancel to stay "
+						+ "on the current session.<br><br>", "Back to main", JOptionPane.OK_CANCEL_OPTION);
+				switch(backToMain) {
+				case JOptionPane.OK_OPTION:
+					_frame.getContentPane().removeAll();				
+					TitleScreen newTitle = new TitleScreen();
+					_frame.getContentPane().add(newTitle);
+					_frame.revalidate();
+					_frame.repaint();
+					break;
+				default:
+					break;
+				}	
 			}
 		});
 		_start.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				_start.setVisible(false);
-				_back.setVisible(false);
+//				_back.setVisible(false);
 				setUpNewLevelGame(_level);
 			}
 		});
@@ -173,21 +180,19 @@ public class GameGUI extends JPanel {
 	private void buildGUI() {
 		_comboBoxModel = new GameComboBoxModel();
 		//Setting up the panels
-		_gamePanel = new JPanel();
-		_gamePanel.setLayout(new BorderLayout());
 		_bottomPanel = new JPanel();
 		_bottomPanel.setPreferredSize(new Dimension(50, 55));
 		_mainPanel = new JPanel();
 		//Main frames for the GUI.
 		_leftTopPanel = new JPanel();
 		_leftPanel = new JPanel();
-		_leftPanel.setPreferredSize(new Dimension(330, 500));
+		_leftPanel.setPreferredSize(new Dimension(330, 515));
 		_rightPanel = new JPanel();
 		//Main game area
 		_leftTopPanel.setPreferredSize(new Dimension(330, 300));
 		
 		//Stats screen
-		_rightPanel.setPreferredSize(new Dimension(440, 500));
+		_rightPanel.setPreferredSize(new Dimension(440, 515));
 
 		//Create main stats panel
 		_rightPanel.setBorder(BorderFactory.createTitledBorder("Game Statistics"));
@@ -215,8 +220,7 @@ public class GameGUI extends JPanel {
 		_inputPanel = new JPanel();
 		_inputPanel.add(_inputField, BorderLayout.EAST);
 		_inputPanel.add(_submit, BorderLayout.WEST);
-		
-		
+				
 		_leftTopPanel.add(_listenAgain, BorderLayout.NORTH);
 		_leftTopPanel.add(scroll, BorderLayout.CENTER);
 		_leftTopPanel.add(_inputPanel, BorderLayout.SOUTH);
@@ -248,14 +252,14 @@ public class GameGUI extends JPanel {
 		JPanel _emptyPanel = new JPanel();
 		_emptyPanel.setPreferredSize(new Dimension(62, 55));
 		_bottomPanel.setLayout(new BorderLayout());
+		_bottomPanel.setPreferredSize(new Dimension(700, 60));
 		_bottomPanel.add(_back, BorderLayout.WEST);
 		_bottomPanel.add(_beginPanel, BorderLayout.CENTER);
 		_bottomPanel.add(_emptyPanel, BorderLayout.EAST);
 
-		_gamePanel.add(_mainPanel, BorderLayout.NORTH);
-		_gamePanel.add(_bottomPanel, BorderLayout.CENTER);
-		
-		add(_gamePanel);
+		setLayout(new BorderLayout());
+		add(_mainPanel, BorderLayout.NORTH);
+		add(_bottomPanel, BorderLayout.CENTER);
 	}
 	private class GameComboBoxModel extends DefaultComboBoxModel {
 		public GameComboBoxModel() {

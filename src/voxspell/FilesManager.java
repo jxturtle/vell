@@ -6,14 +6,19 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class FilesManager {
 	public static final String WORDSASSESSED = ".wordsUsed";
-	private int _token;
+	private int _token, _level;
 	private String _word, _fileName, _statsFileName;
+	private String[] tokens = {"a1","b2","c3","d4","e5","f6","g7","h8","i9","j10","k11"};
 	
-	public FilesManager(String word, int token) {
+	public FilesManager(String word, int level, int token) {
 		_word = word;
+		_level = level;
 		_token = token;
 		setUpFileNames();		
 	}	
@@ -66,7 +71,7 @@ public class FilesManager {
 		String currentLine;
 		while ((currentLine = reader.readLine()) != null) {
 			String trimmedLine = currentLine.trim();
-			if (trimmedLine.equalsIgnoreCase(_word)) continue;
+			if (trimmedLine.equalsIgnoreCase(tokens[_level-1]+"$"+_word)) continue;
 			writer.write(currentLine + "\n");
 		}
 		reader.close();
@@ -81,12 +86,9 @@ public class FilesManager {
 			if (!statsFile.exists()) {
 				statsFile.createNewFile();
 			}
-
 			BufferedWriter fileWriter = new BufferedWriter(new FileWriter(statsFile.getName(), true));
-			//BufferedWriter bufferWriter = new BufferedWriter(fileWriter);
-			fileWriter.write(_word + "\n");
+			fileWriter.write(tokens[_level-1]+"$"+_word + "\n");
 			fileWriter.close();
-
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -97,7 +99,7 @@ public class FilesManager {
 			if (!file.exists()) {
 				file.createNewFile();
 				BufferedWriter fileWriter = new BufferedWriter(new FileWriter(file.getName(), true));
-				fileWriter.write(_word + "\n");
+				fileWriter.write(tokens[_level-1]+"$"+_word + "\n");
 				fileWriter.close();
 			} else {
 				FileReader fr = new FileReader(fileName);
@@ -106,13 +108,13 @@ public class FilesManager {
 				String wordFromFile;
 				boolean found = false;
 				while ((wordFromFile = br.readLine()) != null) {
-					if (wordFromFile.equals(_word)) {
+					if (wordFromFile.equals(_level+"$"+_word)) {
 						found = true;
 					}	
 				}
 				if (!found) {
 					BufferedWriter fileWriter = new BufferedWriter(new FileWriter(file.getName(), true));
-					fileWriter.write(_word + "\n");
+					fileWriter.write(tokens[_level-1]+"$"+_word + "\n");
 					fileWriter.close();
 				}
 			}

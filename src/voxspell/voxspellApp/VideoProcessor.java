@@ -6,11 +6,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
+import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.SwingWorker;
 
 import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
 import uk.co.caprica.vlcj.player.MediaPlayer;
@@ -111,7 +114,8 @@ public class VideoProcessor {
 			public void actionPerformed(ActionEvent e) {
 				if (_extra.getText().equals("Watch the special clip")) {
 					_extra.setText("Watch the original video");
-					_video.playMedia("bird_hey.avi");
+					VideoWorker videoworker = new VideoWorker();
+					videoworker.execute();
 				} else {
 					_extra.setText("Watch the special clip");
 					_video.playMedia(_fileName);
@@ -127,7 +131,23 @@ public class VideoProcessor {
 				}
 				_video.mute();
 			}
-		});
-    	
+		}); 	
+    }
+    protected class VideoWorker extends SwingWorker<Void, Void> {
+    	public static final String command = "ffmpeg -i big_buck_bunny_1_minute.avi -acodec copy -ss 00:00:16 -t "
+    			+ "00:00:07 bird_cut.avi"+"\nffmpeg -i bird_cut.avi -c copy -an muted_bird_cut.avi"+"\nffmpeg -i "
+    			+ "final_hey.mp3 -i muted_bird_cut.avi -acodec copy -vcodec copy muxed.avi";//+"\nrm -f bird_cut.avi"
+    			//+"\nrm -f muted_bird_cut.avi";
+    	protected Void doInBackground() throws Exception {
+    		ProcessBuilder pb = new ProcessBuilder("bash", "-c", command);
+    		Process process = pb.start();
+    		process.waitFor();
+    		_video.playMedia("muxed.avi");
+			return null;
+    	}   	
+    	protected void done(){
+    		File file = new File("muxed.avi");
+    		file.delete();
+    	}
     }
 }
