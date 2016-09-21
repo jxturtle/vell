@@ -20,18 +20,36 @@ import uk.co.caprica.vlcj.player.MediaPlayer;
 import uk.co.caprica.vlcj.player.MediaPlayerEventAdapter;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 
+/**
+ * Class to create a video player for the reward video. When the object is instantiated,
+ * a video player with embedded video pops up over the existing VOXSPELL program.  
+ * @author CJ Bang, Andon Xia
+ *
+ */
 public class VideoProcessor {
+	/*
+	 * specifies the video file that was provided by clients
+	 */
 	private String _fileName = "big_buck_bunny_1_minute.avi";
+	/*
+	 * required components for setting up a video player including all the GUI components
+	 */
 	private EmbeddedMediaPlayerComponent _mediaPlayerComponent;
 	private EmbeddedMediaPlayer _video;
     private JFrame _videoFrame; 
 	private JPanel _mainPanel, _buttonPanel, _leftPanel, _rightPanel;
     private JButton _mute, _play, _stop, _extra;
     private ImageIcon _muteImage, _unmuteImage, _playImage, _stopImage, _pauseImage;
+    /* 
+     * constructor to create a video player with embedded video.
+     */
     public VideoProcessor() {
     	createAndShowVideo();
     	setUpListeners();
     }
+    /* 
+     * private method to create and show a JFrame of video player with embedded video
+     */
     private void createAndShowVideo() {
         _videoFrame = new JFrame("Video Reward");
         _videoFrame.setSize(800, 600);
