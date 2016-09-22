@@ -5,6 +5,14 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * This class is responsible for getting the words to be played
+ * in the "Review Mistakes" game mode. A different implementation is required
+ * as we write words to files in different format to that of the NZCER spelling word
+ * text file. This class reads from the .failed file if it exists.
+ * @author Andon XIa
+ */
+ 
 public class ReviewConfig {
 	private static final String FILENAME = ".failed";
 	private ArrayList<String> _wordArray;
