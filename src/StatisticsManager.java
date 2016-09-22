@@ -11,6 +11,16 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
+/**
+ * StatisticsManager handles gathering information for the "View Statistics"
+ * (global statistics) functionality of Voxspell. This class reads from the
+ * various statistics files to get the occurrences of each unique word, sorted
+ * and sorts them by level to display onto a JTextArea component. This class also
+ * has the implementation for clearing the global statistics (triggered via
+ * JButton component).)
+ * @author Andon Xia
+ */
+ 
 public class StatisticsManager {
 	public static final File MASTEREDSTATS = new File(".masteredStats");
 	public static final File FAULTEDSTATS = new File(".faultedStats");
@@ -64,7 +74,7 @@ public class StatisticsManager {
 		wordsUsed = listOfLists.get(3);
 	}
 	//Gets the View Statistics functionality of the program, and prints it out to the
-	//JTextArea. Numbers are stored in Occurrences. 
+	//JTextArea. Numbers are stored in Occurrences, and are output to the JTextArea.
 	public void getStats() {
 		_outputField.append(" Game Statistics \n");
 		int previousLevel = -1;
