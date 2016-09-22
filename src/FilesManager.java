@@ -8,6 +8,15 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 public class FilesManager {
+	/*
+	* @Author: Andon Xia
+	* This class is handles writing to mastered, faulted, and failed files 
+	* (And their respective stats files). Mastered, faulted and failed stats 
+	* should contain no repeated words, but the stats file may have repeats
+	* if the same word is played more than once. All words played are written to
+	* a collective ".wordsUsed" file when playing Voxspell.
+	*/
+	
 	public static final String WORDSASSESSED = ".wordsUsed";
 	private int _token, _level;
 	private String _word, _fileName, _statsFileName;
@@ -45,6 +54,8 @@ public class FilesManager {
 		//Token == 3 indicates that a word has been spelled correctly.
 		//, and 4 if the word has been faulted. If either, remove the
 		//correct word from failed and faulted. 
+		//When writing to a file, all spaces between words such as "New Zealand" have been written as 
+		//"New#Zealand" to the files to simplify word processing.
 		if (_token == 3 || _token == 4) {
 			try {
 				File failedFile = new File(".failed");
@@ -68,6 +79,7 @@ public class FilesManager {
 		String currentLine;
 		while ((currentLine = reader.readLine()) != null) {
 			String trimmedLine = currentLine.trim();
+			//_level=0 indicates that the current game is a review mistakes session.
 			if (_level != 0) {
 				if (trimmedLine.equalsIgnoreCase(tokens[_level-1]+"$"+_word)) continue;
 			} else {
