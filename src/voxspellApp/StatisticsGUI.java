@@ -2,26 +2,30 @@ package voxspell.voxspellApp;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
 import javax.swing.text.DefaultCaret;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import voxspell.GlobalStatsModel;
 import voxspell.StatisticsManager;
-
+/**
+ * Class that sets up a GUI for Statistics page. There are mainly two GUI components
+ * that shows a statistics for the game session: a JTextArea that outputs all the
+ * words assessed and their statistics sorted in a order of label, a GlobalStatsModel
+ * that outputs the bar chart for percentage by the level. In addition to that
+ * includes buttons and associated event handlers.
+ * @author CJ Bang
+ *
+ */
 public class StatisticsGUI extends JPanel {
 	private static JFrame _frame;
 	private JTextArea _outputArea;
@@ -31,6 +35,11 @@ public class StatisticsGUI extends JPanel {
 	private JScrollPane _scroll;
 	private GlobalStatsModel _globalStatsModel;
 	private int[] _percentage;
+	/*
+	 * Constructor for creating a StatisticsGUI object. Takes JFrame from the main 
+	 * application. Sets up the GUI, and creates all the necessary statistics from 
+	 * StatisticsManager and add the GlobalStatsModel view to the JPanel. 
+	 */
 	public StatisticsGUI(JFrame frame) {
 		_frame = frame;
 		buildGUI();
@@ -41,27 +50,30 @@ public class StatisticsGUI extends JPanel {
 		_globalStatsModel = new GlobalStatsModel(_percentage);
 		_chartPanel.add(_globalStatsModel);
 	}
+	/*
+	 * Creates and lays out GUI components. It simply builds up a composition of GUI
+	 * components and makes use of borders, scroll bars and layout managers. 
+	 */
 	private void buildGUI() {	
+		//panels
 		_bottomPanel = new JPanel();
 		_bottomPanel.setPreferredSize(new Dimension(50, 55));
 		_mainPanel = new JPanel();
-		//Main frames for the GUI.
 		_textPanel = new JPanel();
 		_textPanel.setPreferredSize(new Dimension(360, 515));
 		_textPanel.setBorder(BorderFactory.createTitledBorder("Statistics by word"));
-
 		_chartPanel = new JPanel();
 		_chartPanel.setPreferredSize(new Dimension(410, 515));
 		_chartPanel.setBorder(BorderFactory.createTitledBorder("Statistics by level"));
 		
+		// building up the text panel
 		_outputArea = new JTextArea(32,30);
 		DefaultCaret caret = (DefaultCaret)_outputArea.getCaret();
 		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);				
 		_outputArea.setEditable(false);
 		JScrollPane scroll = new JScrollPane(_outputArea);		
-		_textPanel.add(scroll);						
-		_mainPanel.add(_textPanel);
-		_mainPanel.add(_chartPanel);
+		_textPanel.add(scroll);		
+		// building up the bottom panel with buttons
 		_bottomPanel = new JPanel();
 		_clearStats = new JButton("Clear Statistics");
 		_backImage = new ImageIcon("arrow.png");
@@ -79,11 +91,20 @@ public class StatisticsGUI extends JPanel {
 		_bottomPanel.add(_back, BorderLayout.WEST);
 		_bottomPanel.add(_middlePanel, BorderLayout.CENTER);
 		_bottomPanel.add(_emptyPanel, BorderLayout.EAST);
-
+		// adding panels to create the overall appearance
+		_mainPanel.add(_textPanel);
+		_mainPanel.add(_chartPanel);
 		setLayout(new BorderLayout());
 		add(_mainPanel, BorderLayout.NORTH);
 		add(_bottomPanel, BorderLayout.CENTER);
 	}
+	/*
+	 * Sets up listeners for the buttons. There are two listeners to be implemented.
+	 *  1) _clearStats button call clearHistory() from StatisticsManager object and
+	 *     updates the JTextArea and GlobalStatsModel view 
+	 *  2) _back button creates a new instance of VOXSPELL application title screen
+	 *     and overlays on the current JFrame (as if going back to the main menu)
+	 */
 	private void setUpListeners() {
 		_clearStats.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -108,7 +129,7 @@ public class StatisticsGUI extends JPanel {
 		_back.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				_frame.getContentPane().removeAll();
-				TitleScreen newTitle = new TitleScreen();
+				VOXSPELL newTitle = new VOXSPELL();
 				_frame.getContentPane().add(newTitle);
 				_frame.revalidate();
 				_frame.repaint();
