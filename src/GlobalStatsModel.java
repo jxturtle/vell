@@ -35,18 +35,14 @@ public class GlobalStatsModel extends JPanel {
 		super.paintComponent(g);
 		int x = 40;
 		int y = 355;
-		/* 
-		 * draws a y-axis with 10% increments 
-		 */
+		//draws a y-axis with 10% increments 
 		g.drawString("%", 10, 30);
 		g.drawLine(40,50,40,BAR_CEILING);
 		for (int scale = 0; scale < 101; scale+=10) {
 			g.drawString(Integer.toString(scale), 10, y);
 			y -= VERTICAL_GAP;
 		}
-		/*
-		 * draws the actual bar for each level and draws labels for x axis
-		 */
+		//draws the actual bar for each level and draws labels for x axis
 		g.drawLine(x, BAR_CEILING, 382, BAR_CEILING);
 		for (int i = 0; i < _percentage.length; i++) {
 			g.setColor(new Color(0,0,150));
