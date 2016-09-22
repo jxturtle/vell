@@ -7,15 +7,15 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
+/*
+* @author Andon Xia
+* This class is handles writing to mastered, faulted, and failed files 
+* (And their respective stats files). Mastered, faulted and failed stats 
+* should contain no repeated words, but the stats file may have repeats
+* if the same word is played more than once. All words played are written to
+* a collective ".wordsUsed" file when playing Voxspell.
+*/
 public class FilesManager {
-	/*
-	* @Author: Andon Xia
-	* This class is handles writing to mastered, faulted, and failed files 
-	* (And their respective stats files). Mastered, faulted and failed stats 
-	* should contain no repeated words, but the stats file may have repeats
-	* if the same word is played more than once. All words played are written to
-	* a collective ".wordsUsed" file when playing Voxspell.
-	*/
 	
 	public static final String WORDSASSESSED = ".wordsUsed";
 	private int _token, _level;
