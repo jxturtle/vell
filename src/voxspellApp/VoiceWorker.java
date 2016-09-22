@@ -7,6 +7,14 @@ import voxspell.VoiceEvent;
 
 import java.io.OutputStream;
 
+/**
+ * This class is responsible for entering commands to be spoken
+ * into the festival environment without "locking up" Java GUI.
+ * If no voice is selected in the main frame's JComboBox, then the
+ * Default voice option ("voice_kal_diphone") is selected.
+ * @author Andon Xia
+ */
+ 
 public class VoiceWorker extends SwingWorker<Void, Void>{
 	
 	private int _sleep;
