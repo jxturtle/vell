@@ -11,7 +11,7 @@ public class GameEvent {
 	/* 
 	 * Enum to specify three different types of GameEvents. 
 	 */
-	public enum EventType {wordSpoken, wordCorrect, wordIncorrect};
+	public enum EventType {wordSpoken, wordCorrect, wordIncorrect, gameFinished};
 	
 	private EventType _type;
 
@@ -20,12 +20,6 @@ public class GameEvent {
 	 */
 	private GameEvent(EventType type) {
 		_type = type;
-	}
-	/* 
-	 * Creates a festivalEvent. 
-	 */
-	public static GameEvent makeFestivalEvent() {
-		return new GameEvent(EventType.wordSpoken);
 	}
 	/*
 	 * Creates a wordCorrectEvent
@@ -38,6 +32,18 @@ public class GameEvent {
 	 */
 	public static GameEvent makeIncorrectEvent() {
 		return new GameEvent(EventType.wordIncorrect);
+	}
+	/* 
+	 * Creates a festivalEvent. 
+	 */
+	public static GameEvent makeFestivalEvent() {
+		return new GameEvent(EventType.wordSpoken);
+	}
+	/* 
+	 * Creates a gameFinishedEvent
+	 */
+	public static GameEvent makeGameFinishedEvent() {
+		return new GameEvent(EventType.gameFinished);
 	}
 	/*
 	 * returns the type of the event, one of wordSpoken, wordCorrect and wordIncorrect.

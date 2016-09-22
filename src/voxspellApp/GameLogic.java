@@ -11,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -27,6 +28,7 @@ public class GameLogic {
 	private int _level;
 	String _command;
 	private ArrayList<String> _words;
+	private static JFrame _frame;
 
 	public GameLogic(int level, int wordCap, JTextArea outputArea, JTextField inputField, JButton start, JButton back, JButton submit, ArrayList<GameListener> listeners, boolean startOfGame) {
 		_level = level;
@@ -92,6 +94,7 @@ public class GameLogic {
 							GameLogic experimentalNewGame = new GameLogic(_level, _wordCap-1, _outputArea, _inputField, _start, _back, _submit, _listeners, false);
 							experimentalNewGame.playGame(_words);
 						} else if (fin && _wordCap == 1){
+							fire(GameEvent.makeGameFinishedEvent());
 							_outputArea.append("==============================\n");
 							_outputArea.append("Game has finished. \n");
 							_outputArea.append("==============================\n");
@@ -140,7 +143,7 @@ public class GameLogic {
 	}
 	private void fire(GameEvent e) {
 		for (GameListener listener : _listeners) {
-			listener.updateProgressBar(e);
+			listener.update(e);
 		}
 	}
 	private void fire(GameEvent e, String word) {
@@ -189,6 +192,8 @@ public class GameLogic {
 				_outputArea.append("==============================\n");
 				_outputArea.append("Game has finished. \n");
 				_outputArea.append("==============================\n");
+				fire(GameEvent.makeGameFinishedEvent());
+
 			} else {
 				_start.setText("Repeat the same level");
 				_start.setVisible(true);

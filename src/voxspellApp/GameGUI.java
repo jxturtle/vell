@@ -42,13 +42,14 @@ public class GameGUI extends JPanel {
 	private JPanel[] _levelPanels, _levelLabelPanels;
 	private JLabel[] _levelLabels;
 	private StatsModel[] _statsModels;
-	private StatsModelAdapter[] _statsModelAdapters;
+	private GameAdapter[] _GameAdapters;
 	private StatsModel _reviewStatsModel;
-	private StatsModelAdapter _reviewStatsModelAdapter;
+	private GameAdapter _reviewGameAdapter;
 	private GameLogic _game;
 	private ArrayList<String> _words;
 	private GameConfig _config;
 	private ReviewConfig _reviewConfig;
+	private boolean _isFinished = false;
 	protected static JFrame _frame;
 	
 	public GameGUI(int level, JFrame frame) {
@@ -66,33 +67,29 @@ public class GameGUI extends JPanel {
 	private void setUpListeners() {
 		_back.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (_level != 0) {
-						_backToMain = JOptionPane.showConfirmDialog(null, "<html>Are you sure you want to leave this game session?<br><br>"
-						+ "Your game statistics will be saved but you will lose your progress for the current game session if you leave now.<br><br>Press OK to continue, or Cancel to stay "
-						+ "on the current session.<br><br>", "Back to main", JOptionPane.OK_CANCEL_OPTION);
-				} else {
+				if ((_game == null) || (_isFinished)){
+					returnToMain(_frame);
+				} else if (_level != 0) {
+					_backToMain = JOptionPane.showConfirmDialog(null, "<html>Are you sure you want to leave this game session?<br><br>"
+							+ "Your game statistics will be saved but you will lose your progress for the current game session if you leave now.<br><br>Press OK to continue, or Cancel to stay "
+							+ "on the current session.<br><br>", "Back to main", JOptionPane.OK_CANCEL_OPTION);
+				} else if (_level == 0) {
 					_backToMain = JOptionPane.showConfirmDialog(null, "<html>Are you sure you want to leave this review session?<br><br>"
 							+ "Your game statistics will be saved but you will lose your progress for the current review session if you leave now.<br><br>Press OK to continue, or Cancel to stay "
 							+ "on the current session.<br><br>", "Back to main", JOptionPane.OK_CANCEL_OPTION);
 				}
-
 				switch(_backToMain) {
 				case JOptionPane.OK_OPTION:
-					_frame.getContentPane().removeAll();				
-					TitleScreen newTitle = new TitleScreen();
-					_frame.getContentPane().add(newTitle);
-					_frame.revalidate();
-					_frame.repaint();
+					returnToMain(_frame);
 					break;
 				default:
 					break;
-				}	
+				}
 			}
 		});
 		_start.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				_start.setVisible(false);
-//				_back.setVisible(false);
 				setUpNewLevelGame(_level);
 			}
 		});
@@ -105,15 +102,14 @@ public class GameGUI extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				String wordToRepeat = "";
 				if (_level != 0) {
-					wordToRepeat = _statsModelAdapters[_level-1].getWord();
+					wordToRepeat = _GameAdapters[_level-1].getWord();
 				} else {
-					wordToRepeat = _reviewStatsModelAdapter.getWord();
+					wordToRepeat = _reviewGameAdapter.getWord();
 				}
 				VoiceWorker worker = new VoiceWorker(0, wordToRepeat);
 				worker.execute();
 			}
 		});
-		
 		_changeVoice.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String voiceType = _comboBoxModel.getSelectedItem().toString();
@@ -127,10 +123,20 @@ public class GameGUI extends JPanel {
 			}
 		});
 	}
+	public void setGameFinished() {
+		_isFinished = true;
+	}
+	private void returnToMain(JFrame frame) {
+		frame.getContentPane().removeAll();				
+		TitleScreen newTitle = new TitleScreen();
+		frame.getContentPane().add(newTitle);
+		frame.revalidate();
+		frame.repaint();
+	}
 	private void setUpNewLevelGame(int level) {	
 		if (level == 0) {
 			ArrayList<GameListener> _listeners = new ArrayList<GameListener>();
-			_listeners.add(_reviewStatsModelAdapter);
+			_listeners.add(_reviewGameAdapter);
 			if (_lines < 10) {
 				_game = new GameLogic(_level, _lines, _outputArea, _inputField, _start, _back, _submit, _listeners, true);
 			} else {
@@ -142,12 +148,12 @@ public class GameGUI extends JPanel {
 				_level++;
 				_words = _config.getLevelWords(_level);
 			} else {
-				_statsModelAdapters[_level-1].setNumber(0,0,9);			
+				_GameAdapters[_level-1].setNumber(0,0,9);			
 				_config = new GameConfig();
 			}
 			_words = _config.getLevelWords(_level);
 			ArrayList<GameListener> _listeners = new ArrayList<GameListener>();
-			_listeners.add(_statsModelAdapters[_level-1]);
+			_listeners.add(_GameAdapters[_level-1]);
 			_statsModels[_level-1].compute(0, 0);		
 			_game = new GameLogic(_level, 10, _outputArea, _inputField, _start, _back, _submit, _listeners, true);
 		}
@@ -161,7 +167,7 @@ public class GameGUI extends JPanel {
 		if (level == 0) {
 			_reviewStatsModel = new StatsModel(0, _lines);
 			_reviewStatsModel.setPreferredSize(new Dimension(420,450));
-			_reviewStatsModelAdapter = new StatsModelAdapter(_reviewStatsModel, 0, 0, "");
+			_reviewGameAdapter = new GameAdapter(_reviewStatsModel, this, 0, 0, "");
 			_rightPanel.add(_reviewStatsModel);
 		} else {
 			_rightPanel.setLayout(new GridLayout(11,1));
@@ -169,7 +175,7 @@ public class GameGUI extends JPanel {
 			_levelPanels = new JPanel[11];
 			_levelLabels = new JLabel[11];
 			_levelLabelPanels = new JPanel[11];
-			_statsModelAdapters = new StatsModelAdapter[11];
+			_GameAdapters = new GameAdapter[11];
 			for (int i = 0; i < 11; i++) {
 				_levelPanels[i] = new JPanel();
 				_levelLabelPanels[i] = new JPanel();
@@ -180,7 +186,7 @@ public class GameGUI extends JPanel {
 				_levelLabelPanels[i].add(_levelLabels[i]);
 				_levelPanels[i].add(_levelLabelPanels[i], BorderLayout.WEST);
 				_statsModels[i] = new StatsModel(i+1, 9);
-				_statsModelAdapters[i] = new StatsModelAdapter(_statsModels[i], 0, 0, "");
+				_GameAdapters[i] = new GameAdapter(_statsModels[i], this, 0, 0, "");
 				_levelPanels[i].add(_statsModels[i], BorderLayout.CENTER);
 				_rightPanel.add(_levelPanels[i]);
 			}

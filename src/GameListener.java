@@ -11,7 +11,7 @@ public interface GameListener {
 	 * signature methods that need implementing by the class that implements 
 	 * this interface
 	 */ 
-	void updateProgressBar(GameEvent event);
+	void update(GameEvent event);
 	String getWord();
 	void setWord(GameEvent event, String word);
 	int getLength();
