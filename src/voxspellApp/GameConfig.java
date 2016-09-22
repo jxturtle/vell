@@ -6,6 +6,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 
+/**
+ * This class sets up the list of words for each level to play a
+ * Spelling Game. This class is responsible only to select words
+ * for a "New Game" and not "Review Mistakes" ("Review Mistakes" 
+ * has its own configuration to obtain words).
+ * The name of the words file is NZCER-spelling-lists.txt.
+ * @author Andon Xia
+ */
 public class GameConfig {
 	//Name of the file, placed in the same location as the source folder
 	//of the current directory of the project.
@@ -16,6 +24,12 @@ public class GameConfig {
 	private HashMap<Integer, ArrayList<String>> _finalWordMap;
 	private int _key, _level;
 	
+	/*
+	* This method reads line by line of the specified file,
+	* and puts each word into the level they appear in into a
+	* HashMap with the key value being the level of the word,
+	* and the value being the actual word.
+	*/
 	public GameConfig() {
 		try {
 			HashMap<Integer, ArrayList<String>> _wordMap = new HashMap<Integer, ArrayList<String>>();
@@ -41,6 +55,11 @@ public class GameConfig {
 			e.printStackTrace();
 		}
 	}
+	
+	/*
+	* Returns the list of words for the input level parameter.
+	*/
+	
 	public ArrayList<String> getLevelWords(int level) { 	
 		_words = _finalWordMap.get(level);
 		return _words;
