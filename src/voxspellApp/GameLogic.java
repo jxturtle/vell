@@ -16,6 +16,19 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
+/**
+ * The main class for the Voxspell game logic. This class is responsible
+ * for checking if the input words is correct, faulted or incorrent compared 
+ * to the random word generated from the level selected (and writes to their 
+ * respective files accordingly to how they perform). The implementation of this
+ * class also handles how many times the game is played (in this case, it is 10).
+ * If the number of words for a level is less than 10 (for example if the Game mode is
+ * review mistakes), then all words will be played. Logic has been re-used from my 
+ * Assignment 02 code, which has been modified by CJ and I to meet the requirements of 
+ * Assignment 03.
+ * @author Andon Xia
+ */
+
 public class GameLogic {
 	private ArrayList<GameListener> _listeners;
 	private int _wordCap;
