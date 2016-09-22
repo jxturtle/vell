@@ -9,6 +9,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 
@@ -28,7 +29,15 @@ import javax.swing.JTextField;
 import javax.swing.text.DefaultCaret;
 
 import voxspell.*;
-
+/**
+ * Class that sets up a GUI for a Game session. There are mainly two GUI components
+ * for the game session: a JTextArea that outputs all the words assessed and 
+ * a StatsModel that outputs the progress bar for each level during the game sessions. 
+ * During the review mode, the StatsModel outputs texts not a bar. In addition to the
+ * two main GUI components includes buttons and associated event handlers.
+ * @author CJ Bang
+ *
+ */
 public class GameGUI extends JPanel {
 	private GameComboBoxModel _comboBoxModel;
 	private JComboBox _voiceOptions;
@@ -51,7 +60,11 @@ public class GameGUI extends JPanel {
 	private ReviewConfig _reviewConfig;
 	private boolean _isFinished = false;
 	protected static JFrame _frame;
-	
+	/*
+	 * Constructor for GameGUI. takes two parameters: level to specify the lists of words
+	 * for the game session. JFrame for the main frame. Creates necessary instances required
+	 * for playing game. Build GUI components and sets up with the appropriate StatsModel
+	 */
 	public GameGUI(int level, JFrame frame) {
 		_frame = frame;
 		_level = level;
@@ -64,7 +77,13 @@ public class GameGUI extends JPanel {
 		VoiceEvent.makeDefaultVoice();
 		setUpListeners();
 	}
+	
+	/*
+	 * sets up listeners for the buttons. Five buttons to implement
+	 */
 	private void setUpListeners() {
+		// back button shows an appropriate action. if pressed during the game, it will give a 
+		// warning message. if the game has not been started or has finished, returns to the main
 		_back.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if ((_game == null) || (_isFinished)){
@@ -87,17 +106,22 @@ public class GameGUI extends JPanel {
 				}
 			}
 		});
+		// start button begins the new level game
 		_start.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				_start.setVisible(false);
 				setUpNewLevelGame(_level);
 			}
 		});
+		// pressing enter in JTextField also allows the submit button
+		// to be pressed (for flexibility for user)
 		_inputField.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				_submit.doClick();
 			}
 		});
+		// pressing listen again button will get a current word from the adapter
+		// and creates a voiceworker to say the word
 		_listenAgain.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String wordToRepeat = "";
@@ -110,6 +134,7 @@ public class GameGUI extends JPanel {
 				worker.execute();
 			}
 		});
+		// confirms a voice change
 		_changeVoice.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String voiceType = _comboBoxModel.getSelectedItem().toString();
@@ -123,16 +148,29 @@ public class GameGUI extends JPanel {
 			}
 		});
 	}
+	/*
+	 * a public method for GameAdapter to execute when there is a gameFinished
+	 * event fired. This sets the boolean variable _isFinished to true to show
+	 * an appropriate action when the back button is pressed.
+	 */
 	public void setGameFinished() {
 		_isFinished = true;
 	}
+	/*
+	 * a private method to creates a title screen and return to the title screen
+	 */
 	private void returnToMain(JFrame frame) {
 		frame.getContentPane().removeAll();				
-		TitleScreen newTitle = new TitleScreen();
+		VOXSPELL newTitle = new VOXSPELL();
 		frame.getContentPane().add(newTitle);
 		frame.revalidate();
 		frame.repaint();
 	}
+	/*
+	 * a private method that sets up the actual game session. if level = 0, it first 
+	 * checks the number of words to be run. if level is not 0, then word list is generated
+	 * and game starts. 
+	 */
 	private void setUpNewLevelGame(int level) {	
 		if (level == 0) {
 			ArrayList<GameListener> _listeners = new ArrayList<GameListener>();
@@ -143,10 +181,15 @@ public class GameGUI extends JPanel {
 				_game = new GameLogic(_level, 10, _outputArea, _inputField, _start, _back, _submit, _listeners, true);
 			}		
 		} else {
+			// reset the length and colour of the progress bar and resets the percentage
 			_statsModels[_level-1].setNumber(0,0,9);
+			// if the level is not repeated but newly started, the gamelogic for the next 
+			// level is executed
 			if (_start.getText().equals("Begin the next level")) {
 				_level++;
 				_words = _config.getLevelWords(_level);
+			// if the level is repeated, then the progress bar is reset and gets another
+			// word list for the level and run the game.
 			} else {
 				_GameAdapters[_level-1].setNumber(0,0,9);			
 				_config = new GameConfig();
@@ -163,6 +206,12 @@ public class GameGUI extends JPanel {
 		_outputArea.append("==============================\n");
 		_game.playGame(_words);
 	}
+	/*
+	 * a private method to set up the statsmodel panel. If level is not zero, 
+	 * 11 statsmodels and their respective adapters are created and laid out in an 
+	 * order from level 1 to level 11. if the level is zero, then there is only 
+	 * one panel to be created and one adapter is created.
+	 */
 	private void setUpRightPanel(int level) {
 		if (level == 0) {
 			_reviewStatsModel = new StatsModel(0, _lines);
@@ -192,6 +241,11 @@ public class GameGUI extends JPanel {
 			}
 		}
 	}
+	
+	/*
+	 * creates and lays out GUI components. It simply builds up a composition of GUI
+	 * components and makes use of borders, scroll bar and layout managers
+	 */
 	private void buildGUI() {
 		_comboBoxModel = new GameComboBoxModel();
 		//Setting up the panels
@@ -273,14 +327,17 @@ public class GameGUI extends JPanel {
 		_bottomPanel.add(_emptyPanel, BorderLayout.EAST);
 
 		setLayout(new BorderLayout());
+		setBackground(Color.white);
 		add(_mainPanel, BorderLayout.NORTH);
 		add(_bottomPanel, BorderLayout.CENTER);
 	}
+	/*
+	 * a nested inner class that creates a new combo box for voice choices
+	 */
 	private class GameComboBoxModel extends DefaultComboBoxModel {
 		public GameComboBoxModel() {
 			addElement("Default");
 			addElement("New Zealand");
-
 		}
 	}
 }
