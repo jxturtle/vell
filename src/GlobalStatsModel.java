@@ -8,8 +8,9 @@ import javax.swing.JPanel;
 
 /**
  * Class that draws a bar chart for statistics of the VOXSPELL application.
- * int[] with percentage (from 0% to 100%) for each level is passed in as 
- * a parameter (from the class StatisticsManager).
+ * Shows the statistics saved in the hidden files as long as the statistics get
+ * cleared by the user. int[] with percentage (from 0% to 100%) for each level 
+ * is passed in as a parameter (from the class StatisticsManager).
  * @author CJ Bang
  *
  */
