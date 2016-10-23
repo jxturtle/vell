@@ -1,0 +1,227 @@
+package voxspell.voxspellApp;
+
+import java.util.ArrayList;
+import java.util.Collections;
+
+import voxspell.voxspellAssets.VoiceWorker;
+import voxspell.voxspellModel.GameEvent;
+import voxspell.voxspellModel.GameListener;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+
+/**
+ * The main class for the Voxspell game logic. This class is responsible
+ * for checking if the input words is correct, faulted or incorrent compared 
+ * to the random word generated from the level selected (and writes to their 
+ * respective files accordingly to how they perform). The implementation of this
+ * class also handles how many times the game is played (in this case, it is 10).
+ * If the number of words for a level is less than 10 (for example if the Game mode is
+ * review mistakes), then all words will be played. Logic has been re-used from my 
+ * Assignment 02 code, which has been modified by CJ and I to meet the requirements of 
+ * Assignment 03.
+ * @author Andon Xia
+ */
+
+public class GameLogic {
+	private ArrayList<GameListener> _listeners;
+	private int _wordCap;
+	private JTextArea _outputArea;
+	private JTextField _inputField;
+	private JButton _start, _submit, _back;
+	private String userIn;
+	private boolean fin, _isVideoOn = false, _startOfGame;
+	private int cnt;
+	private int _level;
+	String _command;
+	private TrickTreat _tricksAndTreats;
+	private ArrayList<String> _words;
+	private static JFrame _frame;
+
+	public GameLogic(int level, int wordCap, JTextArea outputArea, JTextField inputField, JButton start, JButton back, JButton submit, ArrayList<GameListener> listeners, boolean startOfGame, TrickTreat tricksAndTreats) {
+		_tricksAndTreats = tricksAndTreats;
+		_level = level;
+		_listeners = listeners;
+		_wordCap = wordCap;
+		_outputArea = outputArea;
+		_inputField = inputField;
+		_start = start;
+		_back = back;
+		_submit = submit;
+		_startOfGame=startOfGame;
+	}
+	
+	private void getUserInput(final String randomWord,final JTextField input, final JTextArea output, final JButton submit) {
+		submit.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (cnt < 2) {
+					String userInput = input.getText();
+					userIn = userInput;
+					input.setText("");
+					output.append(userIn + "\n");
+					if (randomWord.equalsIgnoreCase(userInput)) {
+						cnt += 3;
+						fire(GameEvent.makeCorrectEvent());
+						try {
+							_command = "Correct.";
+							VoiceWorker worker = new VoiceWorker(0, _command);
+							worker.execute();
+							output.append("Correct. \n");
+							FilesManager fileManager = new FilesManager(randomWord, _level, cnt);
+							fileManager.manageFiles();
+							fin = true;
+						} catch (Exception e1) {
+							e1.printStackTrace();
+						}
+					} else {
+						cnt += 1;
+						try {
+							if (cnt == 1) {
+								_command = "Incorrect, please try again:" + randomWord + ":" + randomWord + ".";
+								output.append("Incorrect, please try again.\n");
+								output.append("Enter your selection: ");
+							} else {
+								fin = true;
+								_command = "Incorrect.";
+								output.append("Incorrect.\n");
+								FilesManager fileManager = new FilesManager(randomWord, _level, cnt);
+								fileManager.manageFiles();
+								fire(GameEvent.makeIncorrectEvent());
+							}
+							VoiceWorker worker = new VoiceWorker(0, _command);
+							worker.execute();
+						} catch (Exception e2) {
+							e2.printStackTrace();
+						}
+					}
+					//cnt = 2 is for straight up incorrect
+					//cnt 3 is for correct
+					//cnt 4 is for faulted
+					if (_level == 0) {
+						if (fin && _wordCap > 1) {
+							GameLogic experimentalNewGame = new GameLogic(_level, _wordCap-1, _outputArea, _inputField, _start, _back, _submit, _listeners, false, _tricksAndTreats);
+							experimentalNewGame.playGame(_words);
+						} else if (fin && _wordCap == 1){
+							fire(GameEvent.makeGameFinishedEvent());
+							_outputArea.append("==============================\n");
+							_outputArea.append("Game has finished. \n");
+							_outputArea.append("==============================\n");
+							_back.setVisible(true);
+						}
+					} else {
+						if (fin && _wordCap > 1 && _listeners.get(0).getLength() < 9) {
+							GameLogic experimentalNewGame = new GameLogic(_level, _wordCap-1, _outputArea, _inputField, _start, _back, _submit, _listeners, false, _tricksAndTreats);
+							experimentalNewGame.playGame(_words);
+						} else if (fin && _wordCap == 1 && _listeners.get(0).getLength() < 9) {							
+							openOptionPaneWhenComplete(_level, _isVideoOn);
+						} else if (_listeners.get(0).getLength() >= 9) {
+							rewardTricksAndTreats();
+							openOptionPaneWhenComplete(_level, _isVideoOn);
+						}
+					}
+				}
+			}
+		});
+	}
+	
+	public void playGame(ArrayList<String> words) {
+		_words = words;
+		String randomWord = getRandomWord(_words);
+		System.out.println(randomWord);
+		_outputArea.append("Enter your selection: ");
+		getUserInput(randomWord, _inputField, _outputArea, _submit);
+		try {			
+			_command = "Please spell: " + randomWord;
+			if (_startOfGame) {				
+				VoiceWorker worker = new VoiceWorker(0, _command);
+				worker.execute();
+			} else {
+				VoiceWorker worker = new VoiceWorker(1000, _command);
+				worker.execute();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		fire(GameEvent.makeFestivalEvent(), randomWord);
+	}
+	
+	private String getRandomWord(ArrayList<String> words) {
+		Collections.shuffle(words);
+		String pickWord = words.get(0);
+		words.remove(pickWord);
+		return pickWord;
+	}
+	private void fire(GameEvent e) {
+		for (GameListener listener : _listeners) {
+			listener.update(e);
+		}
+	}
+	private void fire(GameEvent e, String word) {
+		for (GameListener listener : _listeners) {
+			listener.setWord(e, word);
+		}
+	}
+	
+	private void rewardTricksAndTreats(){
+		if (_level != 0) {
+			if (_level > 6) {
+				_tricksAndTreats.addTreats(10);
+			} else {
+				_tricksAndTreats.addTricks(10);
+			}
+		}
+
+	}
+//	private void openTricksTreatsGained() {
+//		int playVideo = JOptionPane.showConfirmDialog(null, "Play video reward?", "Level Complete!", JOptionPane.YES_NO_OPTION);
+//		switch(playVideo) {
+//		case JOptionPane.YES_OPTION:
+//			_isVideoOn = true;
+//			openOptionPaneWhenComplete(_level, _isVideoOn);
+//			VideoProcessor video = new VideoProcessor();
+//			break;
+//		case JOptionPane.NO_OPTION:
+//			openOptionPaneWhenComplete(_level, _isVideoOn);
+//		}		
+//	}
+	private void openOptionPaneWhenComplete(int level, boolean isVideoOn) {
+		String message, yesMessage;
+		if (level == 11) {
+			message = "Would you like to repeat this level?";				
+			yesMessage = "Repeat the same level";
+		} else {
+			message = "Would you like to move to the next level?";				
+			yesMessage = "Begin the next level";
+		}
+		int test = JOptionPane.showConfirmDialog(null, message, "Level Complete!", JOptionPane.YES_NO_OPTION);
+		switch(test) {
+		case JOptionPane.YES_OPTION:
+			_start.setText(yesMessage);
+			_start.setVisible(true);
+			_back.setVisible(true);
+			break;
+		case JOptionPane.NO_OPTION:
+			if (level == 11) {
+				_outputArea.append("==============================\n");
+				_outputArea.append("Game has finished. \n");
+				_outputArea.append("==============================\n");
+				fire(GameEvent.makeGameFinishedEvent());
+
+			} else {
+				_start.setText("Repeat the same level");
+				_start.setVisible(true);
+			}
+			_back.setVisible(true);
+			break;
+		default:
+			break;			
+		}
+	}
+}
